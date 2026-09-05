@@ -1708,8 +1708,8 @@ function generateCode() {
       <h4 class="font-weight-bold" style="font-size:17px;margin-top:16px;">队伍</h4>
       <div class="card py-1 text-dark" style="max-width:730px;background-color:${d.pokemonTheme.bg}">
         <div class="row no-gutters mx-auto">
-          <div class="col ml-1">
-            <div class="card p-1" style="width:100px;background-color:${d.pokemonTheme.light};border-radius:30px;border:2px solid ${d.pokemonTheme.border};overflow:hidden;">
+          <div class="col ml-1" style="display:flex;align-items:center;">
+            <div class="card p-1" style="width:100px;background-color:${d.pokemonTheme.light};border-radius:30px;border:2px solid ${d.pokemonTheme.border};overflow:hidden;display:flex;align-items:center;justify-content:center;">
               <img src="${escAttr(party.trainerImage)}" class="mx-auto" style="width:100px;transform:translate(${d.trainerImageOffset.x}px, ${d.trainerImageOffset.y}px) scale(${d.trainerImageOffset.scale/100});display:block;">
             </div>
           </div>
@@ -1718,8 +1718,8 @@ function generateCode() {
               <p style="font-size:13px;margin:0 0 4px 0;line-height:1.3;white-space:nowrap;">${party.trainerClass}</p>
               <p style="font-size:20px;margin:0;line-height:1.3;white-space:nowrap;">${party.trainerName}</p>
             </div>
-            <div class="card py-1 px-0" style="background-color:${d.pokemonTheme.light};border-radius:30px;white-space:nowrap;">
-              <div class="row mx-auto">${pokeballs}</div>
+            <div class="card py-1 px-2" style="background-color:${d.pokemonTheme.light};border-radius:30px;white-space:nowrap;display:inline-block;width:auto;">
+              <div style="display:inline-flex;gap:2px;align-items:center;">${pokeballs}</div>
             </div>
           </div>
           <div class="col mr-1 text-center pt-1 pt-md-4">
