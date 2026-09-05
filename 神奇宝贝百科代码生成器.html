@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神奇宝贝百科风格代码生成器</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;background:#f0f0f0;color:#333;font-size:14px}
+header{background:#fff;border-bottom:1px solid #ccc;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+header h1{font-size:17px;font-weight:bold}
+.header-btns{display:flex;gap:8px}
+.btn{padding:6px 14px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;transition:background .15s}
+.btn:hover{background:#eee}
+.btn-primary{background:#306030;color:#fff;border-color:#306030}
+.btn-primary:hover{background:#264d26}
+.btn-danger{background:#e53935;color:#fff;border-color:#e53935}
+.btn-danger:hover{background:#c62828}
+.btn-sm{padding:3px 10px;font-size:12px}
+main{display:flex;height:calc(100vh - 49px)}
+#settings{width:320px;min-width:280px;overflow-y:auto;padding:12px;border-right:1px solid #ccc;background:#f7f7f7;flex-shrink:0}
+.settings-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #ddd;position:sticky;top:0;background:#f7f7f7;z-index:10}
+.settings-toolbar span{font-weight:bold;font-size:13px}
+#expand-btn{display:none;position:fixed;top:60px;left:10px;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#preview-wrap{flex:1;display:flex;flex-direction:column;background:#ddd}
+#preview-wrap .preview-bar{padding:6px 14px;background:#ccc;font-size:12px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}
+#preview{flex:1;border:none;background:#fff;width:100%}
+details{background:#fff;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;overflow:hidden}
+details[open]{box-shadow:0 1px 4px rgba(0,0,0,.08)}
+summary{padding:9px 14px;cursor:pointer;font-weight:bold;font-size:13.5px;background:linear-gradient(to bottom,#fafafa,#f0f0f0);user-select:none;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'▼';font-size:10px;color:#999;transition:transform .2s}
+details[open] summary::after{transform:rotate(180deg)}
+summary:hover{background:#eaeaea}
+.dc{padding:14px}
+.fg{margin-bottom:11px}
+.fg>label{display:block;font-size:11.5px;color:#666;margin-bottom:3px;font-weight:bold}
+.fg input[type=text],.fg input[type=url],.fg textarea,.fg select{width:100%;padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;font-family:inherit;background:#fff}
+.fg textarea{min-height:70px;resize:vertical;line-height:1.6}
+.fg input:focus,.fg textarea:focus{outline:none;border-color:#306030;box-shadow:0 0 0 2px rgba(48,96,48,.15)}
+.color-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.color-row .fg{margin-bottom:0;flex:1;min-width:120px}
+.color-row input[type=color]{width:36px;height:30px;border:1px solid #ccc;border-radius:4px;cursor:pointer;padding:1px}
+.rt-wrap{border:1px solid #ccc;border-radius:4px;overflow:hidden;background:#fff}
+.rt-toolbar{display:flex;gap:2px;padding:4px 6px;background:#f5f5f5;border-bottom:1px solid #ddd;flex-wrap:wrap}
+.rt-toolbar button{padding:3px 9px;border:1px solid #ccc;border-radius:3px;background:#fff;cursor:pointer;font-size:12px;min-width:28px}
+.rt-toolbar button:hover{background:#e8e8e8}
+.rt-toolbar button:active{background:#ddd}
+.rt-toolbar .sep{width:1px;background:#ccc;margin:2px 4px}
+.rich-editor{min-height:65px;padding:8px 10px;font-size:13px;line-height:1.7;outline:none;background:#fff}
+.rich-editor:empty::before{content:attr(data-placeholder);color:#aaa}
+.rt-compact .rich-editor{min-height:30px;padding:5px 8px;font-size:13px;line-height:1.5}
+.rt-compact .rt-toolbar{padding:2px 4px}
+.rt-compact .rt-toolbar button{padding:2px 6px;font-size:11px;min-width:22px}
+.infobox-row{border:1px solid #e0e0e0;border-radius:6px;padding:8px 10px;margin-bottom:8px;background:#fafafa}
+.infobox-row .fg{margin-bottom:6px}
+.infobox-row .fg:last-of-type{margin-bottom:4px}
+.infobox-row label{font-size:11px;color:#888}
+.infobox-row input.label-input{font-weight:bold}
+.dyn-row{display:flex;gap:5px;margin-bottom:6px;align-items:flex-start}
+.dyn-row input{flex:1}
+.dyn-row input:first-child{flex:0 0 90px}
+.btn-del{padding:5px 8px;background:#e53935;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;line-height:1}
+.btn-del:hover{background:#c62828}
+.btn-add{padding:5px 14px;background:#306030;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12.5px;margin-top:4px}
+.btn-add:hover{background:#264d26}
+.chapter-block{border:1px solid #e0e0e0;border-radius:6px;padding:10px;margin-bottom:10px;background:#fafafa}
+.chapter-block .ch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.chapter-block .ch-head input{flex:1}
+#code-panel{border-top:2px solid #306030;background:#fff;display:none;flex-direction:column;height:220px;position:fixed;bottom:0;left:0;right:0;z-index:200;box-shadow:0 -2px 10px rgba(0,0,0,.15)}
+#code-panel.open{display:flex}
+#code-panel .cp-head{padding:8px 16px;background:#306030;color:#fff;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:13px;font-weight:bold}
+#code-output{flex:1;border:none;padding:12px;font-family:'Consolas','Monaco','Courier New',monospace;font-size:12px;resize:none;background:#1e1e1e;color:#d4d4d4;line-height:1.5;white-space:pre;overflow:auto}
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:6px;font-size:14px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.hint{font-size:11px;color:#999;margin-top:3px}
+/* 文字颜色面板 */
+.rt-color-btn{position:relative}
+.rt-color-btn .color-indicator{display:block;width:16px;height:3px;margin:2px auto 0;border-radius:1px;background:#3366cc}
+.color-panel{position:fixed;background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:99999;display:none;min-width:180px}
+.color-panel.open{display:block}
+.color-panel .panel-title{font-size:11px;color:#999;margin-bottom:6px;font-weight:bold}
+.color-panel .color-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:8px}
+.color-panel .color-swatch{width:22px;height:22px;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.1);transition:transform .1s}
+.color-panel .color-swatch:hover{transform:scale(1.15)}
+.color-panel .recent-colors{display:flex;gap:4px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #eee}
+.color-panel .recent-colors .color-swatch{width:20px;height:20px}
+.color-panel .custom-color-btn{width:100%;padding:5px;border:1px dashed #ccc;border-radius:4px;background:#fafafa;cursor:pointer;font-size:11px;color:#666;text-align:center}
+.color-panel .custom-color-btn:hover{background:#f0f0f0}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 神奇宝贝百科风格代码生成器</h1>
+  <div class="header-btns">
+    <button class="btn" onclick="importConfig()">📂 导入配置</button>
+    <button class="btn" onclick="exportConfig()">💾 导出配置</button>
+    <button class="btn btn-primary" onclick="toggleCodePanel()">📋 查看/复制代码</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
+  </div>
+</header>
+
+<main>
+<!-- ========== 左侧设置面板 ========== -->
+<div id="settings">
+  <div class="settings-toolbar">
+    <span>⚙️ 设置面板</span>
+    <button class="btn btn-sm" onclick="toggleSidebar()" title="收起面板，全屏预览">« 收起</button>
+  </div>
+
+  <!-- 主题设置 -->
+  <details open>
+    <summary>🎨 主题设置</summary>
+    <div class="dc">
+      <div class="color-row">
+        <div class="fg"><label>主色（信息框背景）</label><input type="text" id="theme-primary" value="#306030" oninput="updateTheme()"></div>
+        <input type="color" id="theme-primary-picker" value="#306030" oninput="syncColor('primary')">
+      </div>
+      <div class="color-row">
+        <div class="fg"><label>深色（边框）</label><input type="text" id="theme-dark" value="#205020" oninput="updateTheme()"></div>
+        <input type="color" id="theme-dark-picker" value="#205020" oninput="syncColor('dark')">
+      </div>
+      <div class="color-row">
+        <div class="fg"><label>浅色（标签列背景）</label><input type="text" id="theme-light" value="#ACBFAC" oninput="updateTheme()"></div>
+        <input type="color" id="theme-light-picker" value="#ACBFAC" oninput="syncColor('light')">
+      </div>
+      <div class="color-row">
+        <div class="fg"><label>分割线颜色</label><input type="text" id="theme-divider" value="#4a854a" oninput="updateTheme()"></div>
+        <input type="color" id="theme-divider-picker" value="#4a854a" oninput="syncColor('divider')">
+      </div>
+      <hr style="border:none;border-top:1px solid #ddd;margin:10px 0;">
+      <p style="font-weight:bold;margin:0 0 8px;">宝可梦队伍训练家卡片</p>
+      <div class="color-row">
+        <div class="fg"><label>背景色（外层卡片）</label><input type="text" id="pkmn-theme-bg" value="#8334B7" oninput="updatePokemonTheme()"></div>
+        <input type="color" id="pkmn-theme-bg-picker" value="#8334B7" oninput="syncPokemonColor('bg')">
+      </div>
+      <div class="color-row">
+        <div class="fg"><label>浅色（图片/名字/精灵球卡片）</label><input type="text" id="pkmn-theme-light" value="#AE7BD0" oninput="updatePokemonTheme()"></div>
+        <input type="color" id="pkmn-theme-light-picker" value="#AE7BD0" oninput="syncPokemonColor('light')">
+      </div>
+      <div class="color-row">
+        <div class="fg"><label>边框色（图片卡片边框）</label><input type="text" id="pkmn-theme-border" value="#552277" oninput="updatePokemonTheme()"></div>
+        <input type="color" id="pkmn-theme-border-picker" value="#552277" oninput="syncPokemonColor('border')">
+      </div>
+    </div>
+  </details>
+
+  <!-- 基础信息 -->
+  <details open>
+    <summary>📝 基础信息</summary>
+    <div class="dc">
+      <div class="fg"><label>页面标题（顶部大标题）</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','rt-page-title')" title="加粗"><b>B</b></button>
+            <button onclick="rtCmd('italic','rt-page-title')" title="斜体"><i>I</i></button>
+            <button onclick="rtLink('rt-page-title')" title="超链接">🔗</button>
+          </div>
+          <div class="rich-editor" id="rt-page-title" contenteditable="true" data-placeholder="页面标题" oninput="updateData()">角色名（作品名）</div>
+        </div>
+      </div>
+      <div class="fg"><label>消歧义引导语（支持加粗/斜体/超链接）</label>
+        <div class="rt-wrap">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','rt-disambiguation')" title="加粗"><b>B</b></button>
+            <button onclick="rtCmd('italic','rt-disambiguation')" title="斜体"><i>I</i></button>
+            <button onclick="rtCmd('underline','rt-disambiguation')" title="下划线"><u>U</u></button>
+            <span class="sep"></span>
+            <button onclick="rtLink('rt-disambiguation')" title="插入超链接">🔗 链接</button>
+            <button onclick="rtCmd('removeFormat','rt-disambiguation')" title="清除格式">✕ 清除</button>
+          </div>
+          <div class="rich-editor" id="rt-disambiguation" contenteditable="true" data-placeholder="消歧义引导语…" oninput="updateData()">这篇文章讲述的是 <span style="color:#3366cc;">作品名</span> 中登场的角色。如果您在寻找 <span style="color:#3366cc;">其他同名角色</span>，请移步 <span style="color:#3366cc;">角色名（消歧义）</span>。</div>
+        </div>
+      </div>
+      <div class="fg"><label>角色名（信息框大标题）</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','rt-char-name')" title="加粗"><b>B</b></button>
+            <button onclick="rtCmd('italic','rt-char-name')" title="斜体"><i>I</i></button>
+            <button onclick="rtLink('rt-char-name')" title="超链接">🔗</button>
+          </div>
+          <div class="rich-editor" id="rt-char-name" contenteditable="true" data-placeholder="角色名" oninput="updateData()">角色名</div>
+        </div>
+      </div>
+      <div class="fg"><label>日文名（需与英文名同时填写才显示，留空则隐藏）</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','rt-jp-name')" title="加粗"><b>B</b></button>
+            <button onclick="rtCmd('italic','rt-jp-name')" title="斜体"><i>I</i></button>
+          </div>
+          <div class="rich-editor" id="rt-jp-name" contenteditable="true" data-placeholder="日文名" oninput="updateData()">日文名</div>
+        </div>
+      </div>
+      <div class="fg"><label>英文名（需与日文名同时填写才显示，留空则隐藏）</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','rt-en-name')" title="加粗"><b>B</b></button>
+            <button onclick="rtCmd('italic','rt-en-name')" title="斜体"><i>I</i></button>
+          </div>
+          <div class="rich-editor" id="rt-en-name" contenteditable="true" data-placeholder="英文名" oninput="updateData()">English Name</div>
+        </div>
+      </div>
+      <div class="fg"><label>标语/称号（留空则不显示）</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','rt-slogan')" title="加粗"><b>B</b></button>
+            <button onclick="rtCmd('italic','rt-slogan')" title="斜体"><i>I</i></button>
+            <button onclick="rtLink('rt-slogan')" title="超链接">🔗</button>
+          </div>
+          <div class="rich-editor" id="rt-slogan" contenteditable="true" data-placeholder="标语/称号" oninput="updateData()">&quot;Lorem ipsum dolor sit amet&quot;</div>
+        </div>
+      </div>
+      <div class="fg"><label>角色图片 URL（纯链接，不需富文本）</label><input type="url" id="image-url" value="" oninput="updateData()"></div>
+      <div class="fg"><label>图片说明文字</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','rt-image-caption')" title="加粗"><b>B</b></button>
+            <button onclick="rtCmd('italic','rt-image-caption')" title="斜体"><i>I</i></button>
+            <button onclick="rtLink('rt-image-caption')" title="超链接">🔗</button>
+          </div>
+          <div class="rich-editor" id="rt-image-caption" contenteditable="true" data-placeholder="图片说明文字" oninput="updateData()">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- 信息框表格 -->
+  <details open>
+    <summary>📊 信息框表格</summary>
+    <div class="dc">
+      <div id="infobox-rows"></div>
+      <button class="btn-add" onclick="addInfoboxRow()">+ 添加一行</button>
+      <div class="hint">标签列右对齐，值列左对齐。首行/末行自动圆角。</div>
+    </div>
+  </details>
+
+  <!-- 简述 -->
+  <details open>
+    <summary>📖 简述（角色简介）</summary>
+    <div class="dc">
+      <div class="rt-wrap">
+        <div class="rt-toolbar">
+          <button onclick="rtCmd('bold')" title="加粗"><b>B</b></button>
+          <button onclick="rtCmd('italic')" title="斜体"><i>I</i></button>
+          <button onclick="rtCmd('underline')" title="下划线"><u>U</u></button>
+          <span class="sep"></span>
+          <button onclick="rtLink()" title="插入超链接">🔗 链接</button>
+          <button onclick="rtCmd('removeFormat')" title="清除格式">✕ 清除</button>
+        </div>
+        <div class="rich-editor" id="summary-editor" contenteditable="true" data-placeholder="在此输入角色简介…支持加粗、斜体、超链接" oninput="updateData()"></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- 章节 -->
+  <details open>
+    <summary>📚 正文章节</summary>
+    <div class="dc">
+      <div id="chapters-list"></div>
+      <button class="btn-add" onclick="addChapter()">+ 添加章节</button>
+      <div class="hint">每个章节包含标题和正文（富文本）。章节会自动生成目录锚点。</div>
+    </div>
+  </details>
+
+  <!-- 人际关系 -->
+  <details id="rel-section">
+    <summary style="display:flex;justify-content:space-between;align-items:center;">
+      <span>👥 人际关系（Relationships）</span>
+      <button class="btn-del" onclick="toggleModule('relationships')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+    </summary>
+    <div class="dc">
+      <div id="relationships-list"></div>
+      <button class="btn-add" onclick="addRelationship()">+ 添加角色</button>
+    </div>
+  </details>
+
+  <!-- 宝可梦队伍 -->
+  <details id="pkm-section">
+    <summary style="display:flex;justify-content:space-between;align-items:center;">
+      <span>⚔️ 宝可梦队伍（Party）</span>
+      <button class="btn-del" onclick="toggleModule('pokemon')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+    </summary>
+    <div class="dc">
+      <div id="pokemon-party"></div>
+    </div>
+  </details>
+
+  <!-- 页脚分类 -->
+  <details id="footer-section">
+    <summary style="display:flex;justify-content:space-between;align-items:center;">
+      <span>🏷️ 页脚分类</span>
+      <button class="btn-del" onclick="toggleModule('footerCats')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+    </summary>
+    <div class="dc">
+      <div id="footer-cats"></div>
+      <button class="btn-add" onclick="addFooterCat()">+ 添加分类</button>
+    </div>
+  </details>
+
+  <!-- 已删除模块恢复 -->
+  <div id="deleted-modules" style="margin-top:10px;padding:8px;background:#fff3e0;border-radius:6px;display:none;">
+    <div style="font-size:12px;font-weight:bold;color:#e65100;margin-bottom:6px;">📦 已删除的模块（点击恢复）</div>
+    <div id="deleted-list"></div>
+  </div>
+
+</div>
+
+<!-- ========== 右侧实时预览 ========== -->
+<div id="preview-wrap">
+  <div class="preview-bar">
+    <span>👁️ 实时预览（模拟 Toyhouse 渲染）</span>
+    <span style="font-weight:normal;color:#666;">修改左侧内容自动更新</span>
+  </div>
+  <iframe id="preview"></iframe>
+</div>
+</main>
+
+<!-- ========== 代码输出面板 ========== -->
+<div id="code-panel">
+  <div class="cp-head" onclick="toggleCodePanel()">
+    <span>📋 生成的 Toyhouse 代码（点击关闭）</span>
+    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();copyCode()">📋 复制全部代码</button>
+  </div>
+  <textarea id="code-output" readonly></textarea>
+</div>
+
+<button id="expand-btn" class="btn btn-primary" onclick="toggleSidebar()">» 展开设置面板</button>
+<input type="color" id="rt-color-picker" style="display:none;" value="#3366cc" onchange="applyColor()">
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== 数据模型 ====================
+let data = {
+  theme: { primary:'#306030', dark:'#205020', light:'#ACBFAC', divider:'#4a854a' },
+  pokemonTheme: { bg:'#8334B7', light:'#AE7BD0', border:'#552277' },
+  trainerImageOffset: { x:0, y:0, scale:100 },
+  pageTitle: '角色名（作品名）',
+  disambiguation: '',
+  charName: '角色名',
+  jpName: '日文名',
+  enName: 'English Name',
+  slogan: '"Lorem ipsum dolor sit amet"',
+  imageUrl: '',
+  imageCaption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  summary: '',
+  infoboxRows: [
+    {label:'性别', value:'Lorem'},
+    {label:'年龄', value:'Lorem'},
+    {label:'职业', value:'Lorem ipsum dolor'},
+    {label:'出场世代', value:'Lorem'},
+    {label:'家乡', value:'Lorem ipsum'},
+    {label:'家乡所在地', value:'Lorem'}
+  ],
+  chapters: [
+    {title:'概要', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]},
+    {title:'外貌', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br><br><b>Lorem</b>：Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.<br><br><b>Ipsum</b>：Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.', images:[]},
+    {title:'性格', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.', images:[]},
+    {title:'经历', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]},
+    {title:'细节', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.', images:[]},
+    {title:'名字来源', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]}
+  ],
+  footerCategories: ['分类1','分类2','分类3'],
+  footerCatsEnabled: true,
+  // 人际关系
+  relationships: [
+    {name:'Character 1', desc:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+    {name:'Character 2', desc:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
+  ],
+  relationshipsEnabled: true,
+  // 宝可梦队伍
+  pokemonParty: {
+    trainerImage: '',
+    trainerClass: 'Pokémon Trainer',
+    trainerName: 'Name',
+    pokemon: [
+      {image:'', name:'Pokémon', gender:'male', level:'50', type1:'', type2:'', ability:'Ability', item:'None', moves:[
+        {name:'Move 1', type:'', category:'Physical'},
+        {name:'Move 2', type:'', category:'Special'},
+        {name:'Move 3', type:'', category:'Status'},
+        {name:'Move 4', type:'', category:'Physical'}
+      ]}
+    ]
+  },
+  pokemonEnabled: true
+};
+
+// ==================== 预览状态管理 ====================
+let previewState = {
+  scrollY: 0,
+  toggle2Collapsed: true,
+  restoreAttempts: 0
+};
+let updateAllTimer = null;
+let previewRestoreTimers = [];
+
+function recordPreviewState() {
+  try {
+    const iframe = document.getElementById('preview');
+    const iwin = iframe.contentWindow;
+    const idoc = iframe.contentDocument;
+    if (iwin && idoc) {
+      previewState.scrollY = iwin.scrollY || iwin.pageYOffset || 0;
+      const toggle2 = idoc.getElementById('toggle2');
+      if (toggle2) {
+        previewState.toggle2Collapsed = !toggle2.classList.contains('show');
+      }
+    }
+  } catch(e) {}
+}
+
+function restorePreviewState() {
+  const iframe = document.getElementById('preview');
+  previewRestoreTimers.forEach(t => clearTimeout(t));
+  previewRestoreTimers = [];
+  previewState.restoreAttempts = 0;
+  const delays = [0, 100, 300, 600];
+  delays.forEach((delay) => {
+    const timer = setTimeout(() => {
+      try {
+        const iwin = iframe.contentWindow;
+        const idoc = iframe.contentDocument;
+        if (!iwin || !idoc) return;
+        if (previewState.scrollY > 0) {
+          iwin.scrollTo(0, previewState.scrollY);
+        }
+        const toggle2 = idoc.getElementById('toggle2');
+        if (toggle2) {
+          // 只操作class，不设置display，让Bootstrap CSS和collapse插件正常工作
+          if (previewState.toggle2Collapsed) {
+            toggle2.classList.remove('show');
+          } else {
+            toggle2.classList.add('show');
+          }
+          // 清除可能残留的内联样式（如height、display），避免干扰collapse动画
+          toggle2.removeAttribute('style');
+        }
+        previewState.restoreAttempts++;
+        // 最后一次恢复后，重新设置事件监听
+        if (delay === 600) {
+          setupPreviewEventListeners();
+        }
+      } catch(e) {}
+    }, delay);
+    previewRestoreTimers.push(timer);
+  });
+}
+
+// ==================== PokeAPI 宝可梦数据库 ====================
+const POKEAPI_BASE = 'https://pokeapi.co/api/v2';
+let allMovesCache = null;      // 所有技能列表 {name, url}
+let moveDetailCache = {};      // 技能详情缓存 id -> {name, type, category, cnName}
+let pokemonDetailCache = {};   // 宝可梦详情缓存 id -> 完整数据
+let abilityCache = {};         // 特性缓存 id -> {cnName, enName}
+let typeCache = {};            // 属性缓存 id -> {cnName, enName}
+let pokemonSearchList = null;  // 宝可梦搜索列表（含中文名）
+
+// 从 PokeAPI names 数组提取中文名（优先 zh-hans 简体，其次 zh-hant 繁体）
+function getCnName(namesArray) {
+  if (!namesArray || !namesArray.length) return null;
+  const zhHans = namesArray.find(n => n.language.name === 'zh-hans');
+  if (zhHans) return zhHans.name;
+  const zhHant = namesArray.find(n => n.language.name === 'zh-hant');
+  if (zhHant) return zhHant.name;
+  return null;
+}
+
+// 宝可梦属性颜色映射（英文属性名 -> 十六进制颜色）
+const TYPE_COLORS = {
+  'normal': '#AAAAAA', 'fire': '#F08030', 'water': '#6890F0', 'electric': '#F8D030',
+  'grass': '#78C850', 'ice': '#98D8D8', 'fighting': '#C03028', 'poison': '#A040A0',
+  'ground': '#E0C068', 'flying': '#A890F0', 'psychic': '#F85888', 'bug': '#A8B820',
+  'rock': '#B8A038', 'ghost': '#705898', 'dragon': '#7038F8', 'dark': '#705848',
+  'steel': '#B8B8D0', 'fairy': '#EE99AC'
+};
+// 根据属性名（中文或英文）获取颜色
+function getTypeColor(typeName) {
+  if (!typeName) return '#AAAAAA';
+  // 直接英文匹配
+  if (TYPE_COLORS[typeName]) return TYPE_COLORS[typeName];
+  // 中文反向匹配
+  for (const [en, cn] of Object.entries(TYPE_CN)) {
+    if (cn === typeName) return TYPE_COLORS[en];
+  }
+  return '#AAAAAA';
+}
+// 伤害类型中英文映射
+const CATEGORY_CN = {'physical': '物理', 'special': '特殊', 'status': '变化'};
+// 伤害类型颜色（中文名 -> 背景色/文字色，参考神奇宝贝百科）
+const CATEGORY_COLORS = {
+  '物理': {bg: '#FF4400', text: '#FFDD00'},
+  '特殊': {bg: '#2266CC', text: '#FFFFFF'},
+  '变化': {bg: '#999999', text: '#FFFFFF'}
+};
+// 属性中文名映射
+const TYPE_CN = {
+  'normal': '一般', 'fire': '火', 'water': '水', 'electric': '电', 'grass': '草',
+  'ice': '冰', 'fighting': '格斗', 'poison': '毒', 'ground': '地面', 'flying': '飞行',
+  'psychic': '超能力', 'bug': '虫', 'rock': '岩石', 'ghost': '幽灵', 'dragon': '龙',
+  'dark': '恶', 'steel': '钢', 'fairy': '妖精'
+};
+// 属性主题色（中文名 -> 主色/浅色/深色，用于宝可梦卡片变色）
+const TYPE_THEME = {
+  '一般':   {main:'#AAAAAA', light:'#D8D8D8', dark:'#666666'},
+  '火':     {main:'#F08030', light:'#F8D0B0', dark:'#9C4E12'},
+  '水':     {main:'#6890F0', light:'#B0C8F8', dark:'#2E5A9E'},
+  '电':     {main:'#F8D030', light:'#F8E890', dark:'#A88810'},
+  '草':     {main:'#78C850', light:'#B8E890', dark:'#3E8E20'},
+  '冰':     {main:'#98D8D8', light:'#D0F0F0', dark:'#4E8E8E'},
+  '格斗':   {main:'#C03028', light:'#F0A098', dark:'#781810'},
+  '毒':     {main:'#A040A0', light:'#D898D8', dark:'#601860'},
+  '地面':   {main:'#E0C068', light:'#F0E0A8', dark:'#886820'},
+  '飞行':   {main:'#A890F0', light:'#D0C0F8', dark:'#5848A8'},
+  '超能力': {main:'#F85888', light:'#F8A8C0', dark:'#A81848'},
+  '虫':     {main:'#A8B820', light:'#D8E078', dark:'#586810'},
+  '岩石':   {main:'#B8A038', light:'#E0D088', dark:'#685818'},
+  '幽灵':   {main:'#705898', light:'#A898C8', dark:'#382858'},
+  '龙':     {main:'#7038F8', light:'#A888F8', dark:'#3818A8'},
+  '恶':     {main:'#705848', light:'#A89888', dark:'#382818'},
+  '钢':     {main:'#B8B8D0', light:'#D8D8E8', dark:'#686898'},
+  '妖精':   {main:'#EE99AC', light:'#F8D0D8', dark:'#A85868'}
+};
+
+// 通用 fetch JSON
+async function pokeFetch(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('PokeAPI error: ' + res.status);
+  return res.json();
+}
+
+// 获取所有技能列表（页面加载时调用一次，后台异步预加载中文名）
+async function loadAllMoves() {
+  if (allMovesCache) return allMovesCache;
+  try {
+    const data = await pokeFetch(POKEAPI_BASE + '/move?limit=1000');
+    allMovesCache = data.results.map((m, i) => ({
+      name: m.name,
+      url: m.url,
+      cnName: null,
+      type: null,
+      category: null
+    }));
+    // 后台异步分批加载技能详情（中文名、属性、伤害类型）
+    (async () => {
+      const batchSize = 20;
+      for (let i = 0; i < allMovesCache.length; i += batchSize) {
+        const batch = allMovesCache.slice(i, i + batchSize);
+        await Promise.all(batch.map(async (m) => {
+          if (m.cnName) return;
+          try {
+            const detail = await pokeFetch(m.url);
+            m.cnName = getCnName(detail.names) || detail.name;
+            m.type = detail.type.name;
+            m.category = detail.damage_class.name;
+          } catch(e) {}
+        }));
+      }
+    })();
+    return allMovesCache;
+  } catch(e) {
+    console.error('加载技能列表失败:', e);
+    return [];
+  }
+}
+
+// 获取技能详情（含中文名、属性、伤害类型）
+async function getMoveDetail(moveNameOrUrl) {
+  const cacheKey = moveNameOrUrl;
+  if (moveDetailCache[cacheKey]) return moveDetailCache[cacheKey];
+  try {
+    const url = moveNameOrUrl.startsWith('http') ? moveNameOrUrl : POKEAPI_BASE + '/move/' + moveNameOrUrl.toLowerCase();
+    const data = await pokeFetch(url);
+    const cnName = getCnName(data.names) || data.name;
+    const typeName = data.type.name;
+    const damageClass = data.damage_class.name; // physical/special/status
+    const result = {name: cnName, enName: data.name, type: typeName, category: damageClass, url: url};
+    moveDetailCache[cacheKey] = result;
+    return result;
+  } catch(e) {
+    console.error('获取技能详情失败:', e);
+    return null;
+  }
+}
+
+// 搜索技能（中文名或英文名，预加载完成后中文名可直接搜索）
+async function searchMoves(query, limit=10) {
+  if (!allMovesCache) await loadAllMoves();
+  if (!query) return [];
+  const q = query.toLowerCase().trim();
+  // 同时匹配英文名和中文名
+  const matches = allMovesCache.filter(m =>
+    (m.name && m.name.includes(q)) || (m.cnName && m.cnName.includes(query))
+  ).slice(0, limit);
+  // 对还没有详情的匹配结果，即时获取
+  const results = await Promise.all(matches.map(async m => {
+    if (m.cnName && m.type) {
+      return {name: m.cnName, enName: m.name, type: m.type, category: CATEGORY_CN[m.category] || m.category, url: m.url};
+    }
+    try {
+      const detail = await getMoveDetail(m.url);
+      if (!detail) return null;
+      m.cnName = detail.name;
+      m.type = detail.type;
+      m.category = detail.category;
+      return {name: detail.name, enName: detail.enName, type: detail.type, category: CATEGORY_CN[detail.category] || detail.category, url: m.url};
+    } catch(e) {
+      return null;
+    }
+  }));
+  return results.filter(r => r);
+}
+
+// 获取宝可梦搜索列表（预加载所有宝可梦的中文名，后台异步分批进行）
+async function loadPokemonSearchList() {
+  if (pokemonSearchList) return pokemonSearchList;
+  try {
+    const data = await pokeFetch(POKEAPI_BASE + '/pokemon?limit=1025');
+    // 先初始化列表（只有英文名和ID）
+    pokemonSearchList = data.results.map((p, i) => ({
+      id: i + 1,
+      name: p.name,
+      cnName: null,
+      url: p.url
+    }));
+    // 后台异步分批加载中文名（不阻塞界面）
+    (async () => {
+      const batchSize = 30;
+      for (let i = 0; i < pokemonSearchList.length; i += batchSize) {
+        const batch = pokemonSearchList.slice(i, i + batchSize);
+        await Promise.all(batch.map(async (p) => {
+          if (p.cnName) return;
+          try {
+            const species = await pokeFetch(POKEAPI_BASE + '/pokemon-species/' + p.id);
+            const cnName = getCnName(species.names);
+            if (cnName) p.cnName = cnName;
+          } catch(e) {}
+        }));
+      }
+    })();
+    return pokemonSearchList;
+  } catch(e) {
+    console.error('加载宝可梦列表失败:', e);
+    return [];
+  }
+}
+
+// 搜索宝可梦（中文名或英文名，预加载完成后中文名可直接搜索）
+async function searchPokemon(query, limit=10) {
+  const list = await loadPokemonSearchList();
+  if (!query) return [];
+  const q = query.toLowerCase().trim();
+  // 同时匹配英文名和中文名
+  const matches = list.filter(p =>
+    (p.name && p.name.includes(q)) || (p.cnName && p.cnName.includes(query))
+  ).slice(0, limit);
+  // 对还没有中文名的匹配结果，即时获取中文名
+  const results = await Promise.all(matches.map(async p => {
+    if (p.cnName) return p;
+    try {
+      const species = await pokeFetch(POKEAPI_BASE + '/pokemon-species/' + p.id);
+      const cnName = getCnName(species.names);
+      if (!cnName) return null;
+      p.cnName = cnName;
+      return p;
+    } catch(e) {
+      return null;
+    }
+  }));
+  return results.filter(r => r);
+}
+
+// 获取宝可梦完整数据（图片、属性、特性、技能）
+async function fetchPokemonFull(pokemonIdOrName) {
+  const cacheKey = String(pokemonIdOrName);
+  if (pokemonDetailCache[cacheKey]) return pokemonDetailCache[cacheKey];
+  try {
+    // 基本数据
+    const pkmn = await pokeFetch(POKEAPI_BASE + '/pokemon/' + pokemonIdOrName);
+    // 物种数据（中文名）
+    const species = await pokeFetch(POKEAPI_BASE + '/pokemon-species/' + pkmn.id);
+    const cnName = getCnName(species.names) || pkmn.name;
+
+    // 图片选项
+    const imageOptions = [];
+    const s = pkmn.sprites;
+    if (s.other && s.other['official-artwork'] && s.other['official-artwork'].front_default)
+      imageOptions.push({label: '官方艺术图', url: s.other['official-artwork'].front_default});
+    if (s.other && s.other.home && s.other.home.front_default)
+      imageOptions.push({label: 'HOME图', url: s.other.home.front_default});
+    if (s.other && s.other.home && s.other.home.front_shiny)
+      imageOptions.push({label: 'HOME异色图', url: s.other.home.front_shiny});
+    if (s.other && s.other['official-artwork'] && s.other['official-artwork'].front_shiny)
+      imageOptions.push({label: '官方艺术异色图', url: s.other['official-artwork'].front_shiny});
+    if (s.front_default)
+      imageOptions.push({label: '最新世代正面像素图', url: s.front_default});
+    if (s.front_shiny)
+      imageOptions.push({label: '最新世代异色像素图', url: s.front_shiny});
+    // 各世代像素图
+    if (s.versions) {
+      const genLabels = {
+        'generation-i': '第一世代', 'generation-ii': '第二世代', 'generation-iii': '第三世代',
+        'generation-iv': '第四世代', 'generation-v': '第五世代', 'generation-vi': '第六世代',
+        'generation-vii': '第七世代', 'generation-viii': '第八世代'
+      };
+      for (const [genKey, genData] of Object.entries(s.versions)) {
+        for (const [gameKey, gameData] of Object.entries(genData)) {
+          if (gameData.front_default) {
+            imageOptions.push({label: genLabels[genKey] + ' ' + gameKey + ' 正面', url: gameData.front_default});
+          }
+        }
+      }
+    }
+
+    // 属性（中文名）
+    const types = [];
+    for (const t of pkmn.types) {
+      const typeData = await pokeFetch(t.type.url);
+      types.push({name: getCnName(typeData.names) || t.type.name, enName: t.type.name});
+    }
+
+    // 特性（中文名，含隐藏特性）
+    const abilities = [];
+    for (const a of pkmn.abilities) {
+      const abData = await pokeFetch(a.ability.url);
+      abilities.push({
+        name: getCnName(abData.names) || a.ability.name,
+        enName: a.ability.name,
+        isHidden: a.is_hidden
+      });
+    }
+
+    const result = {
+      id: pkmn.id,
+      name: cnName,
+      enName: pkmn.name,
+      imageOptions: imageOptions,
+      types: types,
+      abilities: abilities,
+      height: pkmn.height,
+      weight: pkmn.weight
+    };
+    pokemonDetailCache[cacheKey] = result;
+    return result;
+  } catch(e) {
+    console.error('获取宝可梦数据失败:', e);
+    return null;
+  }
+}
+
+// ==================== 初始化 ====================
+function init() {
+  // 设置简述默认内容
+  document.getElementById('summary-editor').innerHTML = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.<br><br>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+  data.summary = document.getElementById('summary-editor').innerHTML;
+  data.disambiguation = document.getElementById('rt-disambiguation').innerHTML;
+  renderInfoboxRows();
+  renderChapters();
+  renderFooterCats();
+  renderRelationships();
+  renderPokemonParty();
+  updateModuleVisibility();
+  updateAll();
+  addColorButtonToAll();
+  // 预加载宝可梦数据库（后台异步，不阻塞界面）
+  loadAllMoves();
+  loadPokemonSearchList();
+  // 延迟给iframe添加事件监听，实时记录滚动和折叠状态
+  setTimeout(() => {
+    setupPreviewEventListeners();
+  }, 1000);
+}
+
+// 给预览iframe添加事件监听，实时记录状态
+function setupPreviewEventListeners() {
+  try {
+    const iframe = document.getElementById('preview');
+    const iwin = iframe.contentWindow;
+    const idoc = iframe.contentDocument;
+    if (!iwin || !idoc) return;
+    // 监听滚动事件，实时记录滚动位置
+    iwin.addEventListener('scroll', () => {
+      previewState.scrollY = iwin.scrollY || iwin.pageYOffset || 0;
+    }, {passive: true});
+    // 监听toggle2折叠状态变化
+    const toggle2 = idoc.getElementById('toggle2');
+    if (toggle2) {
+      const observer = new MutationObserver(() => {
+        previewState.toggle2Collapsed = !toggle2.classList.contains('show');
+      });
+      observer.observe(toggle2, {attributes: true, attributeFilter: ['class', 'style']});
+    }
+  } catch(e) {}
+}
+
+// ==================== 主题色同步 ====================
+function syncColor(key) {
+  const picker = document.getElementById('theme-' + key + '-picker');
+  const text = document.getElementById('theme-' + key);
+  text.value = picker.value;
+  updateTheme();
+}
+function updateTheme() {
+  data.theme.primary = document.getElementById('theme-primary').value;
+  data.theme.dark = document.getElementById('theme-dark').value;
+  data.theme.light = document.getElementById('theme-light').value;
+  data.theme.divider = document.getElementById('theme-divider').value;
+  // 同步 picker
+  document.getElementById('theme-primary-picker').value = data.theme.primary;
+  document.getElementById('theme-dark-picker').value = data.theme.dark;
+  document.getElementById('theme-light-picker').value = data.theme.light;
+  document.getElementById('theme-divider-picker').value = data.theme.divider;
+  updateAll();
+}
+
+// ==================== 宝可梦队伍主题色同步 ====================
+function syncPokemonColor(key) {
+  const picker = document.getElementById('pkmn-theme-' + key + '-picker');
+  const text = document.getElementById('pkmn-theme-' + key);
+  text.value = picker.value;
+  updatePokemonTheme();
+}
+function updatePokemonTheme() {
+  data.pokemonTheme.bg = document.getElementById('pkmn-theme-bg').value;
+  data.pokemonTheme.light = document.getElementById('pkmn-theme-light').value;
+  data.pokemonTheme.border = document.getElementById('pkmn-theme-border').value;
+  // 同步 picker
+  document.getElementById('pkmn-theme-bg-picker').value = data.pokemonTheme.bg;
+  document.getElementById('pkmn-theme-light-picker').value = data.pokemonTheme.light;
+  document.getElementById('pkmn-theme-border-picker').value = data.pokemonTheme.border;
+  updateAll();
+}
+
+// ==================== 基础数据同步 ====================
+function updateData() {
+  data.pageTitle = document.getElementById('rt-page-title').innerHTML;
+  data.disambiguation = document.getElementById('rt-disambiguation').innerHTML;
+  data.charName = document.getElementById('rt-char-name').innerHTML;
+  data.jpName = document.getElementById('rt-jp-name').innerHTML;
+  data.enName = document.getElementById('rt-en-name').innerHTML;
+  data.slogan = document.getElementById('rt-slogan').innerHTML;
+  data.imageUrl = document.getElementById('image-url').value;
+  data.imageCaption = document.getElementById('rt-image-caption').innerHTML;
+  data.summary = document.getElementById('summary-editor').innerHTML;
+  updateAll();
+}
+
+// ==================== 信息框表格动态行 ====================
+function renderInfoboxRows() {
+  const container = document.getElementById('infobox-rows');
+  container.innerHTML = '';
+  data.infoboxRows.forEach((row, i) => {
+    const div = document.createElement('div');
+    div.className = 'infobox-row';
+    const valueId = 'infobox-value-' + i;
+    div.innerHTML = `
+      <div class="fg">
+        <label>标签（默认加粗）</label>
+        <input type="text" class="label-input" placeholder="标签" value="${escAttr(row.label)}" oninput="data.infoboxRows[${i}].label=this.value;updateAll()">
+      </div>
+      <div class="fg">
+        <label>值（富文本，支持加粗/斜体/超链接）</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','${valueId}')" title="加粗"><b>B</b></button>
+            <button onclick="rtCmd('italic','${valueId}')" title="斜体"><i>I</i></button>
+            <button onclick="rtLink('${valueId}')" title="超链接">🔗</button>
+            <button onclick="rtCmd('removeFormat','${valueId}')" title="清除格式">✕</button>
+          </div>
+          <div class="rich-editor" id="${valueId}" contenteditable="true" data-placeholder="值…" oninput="data.infoboxRows[${i}].value=this.innerHTML;updateAll()">${row.value}</div>
+        </div>
+      </div>
+      <button class="btn-del" onclick="delInfoboxRow(${i})" title="删除此行">✕ 删除此行</button>`;
+    container.appendChild(div);
+  });
+  addColorButtonToAll();
+}
+function addInfoboxRow() {
+  data.infoboxRows.push({label:'', value:''});
+  renderInfoboxRows();
+  updateAll();
+}
+function delInfoboxRow(i) {
+  data.infoboxRows.splice(i, 1);
+  renderInfoboxRows();
+  updateAll();
+}
+
+// ==================== 模块启用/禁用 ====================
+const MODULE_MAP = {
+  relationships: {sectionId:'rel-section', label:'人际关系（Relationships）', enabledKey:'relationshipsEnabled'},
+  pokemon: {sectionId:'pkm-section', label:'宝可梦队伍（Party）', enabledKey:'pokemonEnabled'},
+  footerCats: {sectionId:'footer-section', label:'页脚分类', enabledKey:'footerCatsEnabled'}
+};
+
+function toggleModule(key) {
+  const m = MODULE_MAP[key];
+  if (!m) return;
+  data[m.enabledKey] = !data[m.enabledKey];
+  updateModuleVisibility();
+  updateAll();
+}
+
+function updateModuleVisibility() {
+  const deletedList = document.getElementById('deleted-list');
+  const deletedContainer = document.getElementById('deleted-modules');
+  let deletedHtml = '';
+  for (const [key, m] of Object.entries(MODULE_MAP)) {
+    const section = document.getElementById(m.sectionId);
+    if (section) {
+      section.style.display = data[m.enabledKey] ? '' : 'none';
+    }
+    if (!data[m.enabledKey]) {
+      deletedHtml += `<button onclick="toggleModule('${key}')" style="margin:2px;padding:4px 10px;background:#4caf50;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;">↩️ 恢复${m.label}</button>`;
+    }
+  }
+  if (deletedList) deletedList.innerHTML = deletedHtml;
+  if (deletedContainer) deletedContainer.style.display = deletedHtml ? 'block' : 'none';
+}
+
+// ==================== 章节动态 ====================
+function renderChapters() {
+  const container = document.getElementById('chapters-list');
+  container.innerHTML = '';
+  data.chapters.forEach((ch, i) => {
+    const div = document.createElement('div');
+    div.className = 'chapter-block';
+    div.innerHTML = `
+      <div class="ch-head">
+        <input type="text" placeholder="章节标题" value="${escAttr(ch.title)}" oninput="data.chapters[${i}].title=this.value;updateAll()">
+        <button class="btn-del" onclick="delChapter(${i})" title="删除章节">✕</button>
+      </div>
+      <div class="rt-wrap">
+        <div class="rt-toolbar">
+          <button onclick="rtCmd('bold',${i})" title="加粗"><b>B</b></button>
+          <button onclick="rtCmd('italic',${i})" title="斜体"><i>I</i></button>
+          <button onclick="rtCmd('underline',${i})" title="下划线"><u>U</u></button>
+          <span class="sep"></span>
+          <button onclick="rtLink(${i})" title="插入超链接">🔗 链接</button>
+          <button onclick="rtCmd('removeFormat',${i})" title="清除格式">✕ 清除</button>
+        </div>
+        <div class="rich-editor" id="chapter-editor-${i}" contenteditable="true" data-placeholder="在此输入章节正文…" oninput="data.chapters[${i}].content=this.innerHTML;updateAll()">${ch.content}</div>
+      </div>
+      <div style="margin-top:8px;">
+        <div style="font-size:12px;color:#888;margin-bottom:4px;">🖼️ 章节图片框（右浮动，可选）</div>
+        <div id="chapter-images-${i}"></div>
+        <button class="btn-add" onclick="addChapterImage(${i})" style="margin-top:4px;font-size:12px;">+ 添加图片框</button>
+      </div>`;
+    container.appendChild(div);
+    renderChapterImages(i);
+  });
+  addColorButtonToAll();
+}
+function renderChapterImages(chIdx) {
+  const container = document.getElementById('chapter-images-' + chIdx);
+  if (!container) return;
+  container.innerHTML = '';
+  const ch = data.chapters[chIdx];
+  if (!ch.images) ch.images = [];
+  ch.images.forEach((img, j) => {
+    if (!img.width) img.width = '220px';
+    if (!img.position) img.position = 'right';
+    const div = document.createElement('div');
+    div.className = 'dyn-row';
+    div.style.marginBottom = '4px';
+    div.style.flexWrap = 'wrap';
+    div.style.gap = '4px';
+    div.innerHTML = `
+      <input type="url" placeholder="图片URL" value="${escAttr(img.url)}" oninput="data.chapters[${chIdx}].images[${j}].url=this.value;updateAll()" style="flex:2;min-width:150px;font-size:12px;">
+      <input type="text" placeholder="图片说明（可选）" value="${escAttr(img.caption)}" oninput="data.chapters[${chIdx}].images[${j}].caption=this.value;updateAll()" style="flex:1;min-width:100px;font-size:12px;">
+      <input type="text" placeholder="宽度" value="${escAttr(img.width)}" oninput="data.chapters[${chIdx}].images[${j}].width=this.value;updateAll()" style="width:70px;font-size:12px;" title="如 200px 或 30%">
+      <select oninput="data.chapters[${chIdx}].images[${j}].position=this.value;updateAll()" style="font-size:12px;width:80px;" title="位置">
+        <option value="right" ${img.position==='right'?'selected':''}>右浮动</option>
+        <option value="left" ${img.position==='left'?'selected':''}>左浮动</option>
+        <option value="center" ${img.position==='center'?'selected':''}>居中</option>
+      </select>
+      <button class="btn-del" onclick="delChapterImage(${chIdx},${j})" style="padding:2px 8px;font-size:12px;">✕</button>`;
+    container.appendChild(div);
+  });
+}
+function addChapterImage(chIdx) {
+  if (!data.chapters[chIdx].images) data.chapters[chIdx].images = [];
+  data.chapters[chIdx].images.push({url:'', caption:'', width:'220px', position:'right'});
+  renderChapterImages(chIdx);
+  updateAll();
+}
+function delChapterImage(chIdx, imgIdx) {
+  data.chapters[chIdx].images.splice(imgIdx, 1);
+  renderChapterImages(chIdx);
+  updateAll();
+}
+function addChapter() {
+  data.chapters.push({title:'新章节', content:'', images:[]});
+  renderChapters();
+  updateAll();
+}
+function delChapter(i) {
+  data.chapters.splice(i, 1);
+  renderChapters();
+  updateAll();
+}
+
+// ==================== 页脚分类动态 ====================
+function renderFooterCats() {
+  const container = document.getElementById('footer-cats');
+  container.innerHTML = '';
+  data.footerCategories.forEach((cat, i) => {
+    const div = document.createElement('div');
+    div.className = 'dyn-row';
+    div.innerHTML = `
+      <input type="text" placeholder="分类名" value="${escAttr(cat)}" oninput="data.footerCategories[${i}]=this.value;updateAll()" style="flex:1">
+      <button class="btn-del" onclick="delFooterCat(${i})" title="删除">✕</button>`;
+    container.appendChild(div);
+  });
+}
+function addFooterCat() {
+  data.footerCategories.push('新分类');
+  renderFooterCats();
+  updateAll();
+}
+function delFooterCat(i) {
+  data.footerCategories.splice(i, 1);
+  renderFooterCats();
+  updateAll();
+}
+
+// ==================== 人际关系 ====================
+function renderRelationships() {
+  const container = document.getElementById('relationships-list');
+  container.innerHTML = '';
+  data.relationships.forEach((rel, i) => {
+    const div = document.createElement('div');
+    div.className = 'infobox-row';
+    const descId = 'rel-desc-' + i;
+    div.innerHTML = `
+      <div class="fg"><label>角色名</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','${descId}-name')"><b>B</b></button>
+            <button onclick="rtCmd('italic','${descId}-name')"><i>I</i></button>
+          </div>
+          <div class="rich-editor" id="${descId}-name" contenteditable="true" data-placeholder="角色名" oninput="data.relationships[${i}].name=this.innerHTML;updateAll()">${rel.name}</div>
+        </div>
+      </div>
+      <div class="fg"><label>关系描述（富文本）</label>
+        <div class="rt-wrap rt-compact">
+          <div class="rt-toolbar">
+            <button onclick="rtCmd('bold','${descId}')"><b>B</b></button>
+            <button onclick="rtCmd('italic','${descId}')"><i>I</i></button>
+            <button onclick="rtLink('${descId}')">🔗</button>
+          </div>
+          <div class="rich-editor" id="${descId}" contenteditable="true" data-placeholder="关系描述…" oninput="data.relationships[${i}].desc=this.innerHTML;updateAll()">${rel.desc}</div>
+        </div>
+      </div>
+      <button class="btn-del" onclick="delRelationship(${i})">✕ 删除此角色</button>`;
+    container.appendChild(div);
+  });
+  addColorButtonToAll();
+}
+function addRelationship() {
+  data.relationships.push({name:'新角色', desc:'关系描述…'});
+  renderRelationships();
+  updateAll();
+}
+function delRelationship(i) {
+  data.relationships.splice(i, 1);
+  renderRelationships();
+  updateAll();
+}
+
+// ==================== 宝可梦队伍 ====================
+function renderPokemonParty() {
+  const container = document.getElementById('pokemon-party');
+  const p = data.pokemonParty;
+  let html = `
+    <div class="infobox-row">
+      <div class="fg"><label>训练家图片 URL</label><input type="url" value="${escAttr(p.trainerImage)}" oninput="data.pokemonParty.trainerImage=this.value;updateAll()"></div>
+      <div class="fg"><label>训练家职业</label><input type="text" value="${escAttr(p.trainerClass)}" oninput="data.pokemonParty.trainerClass=this.value;updateAll()"></div>
+      <div class="fg"><label>训练家名字</label><input type="text" value="${escAttr(p.trainerName)}" oninput="data.pokemonParty.trainerName=this.value;updateAll()"></div>
+    </div>
+    <div class="infobox-row" style="background:#f8f9fa;padding:8px;border-radius:6px;margin-bottom:8px;">
+      <div style="font-weight:bold;font-size:12px;margin-bottom:6px;">🖼️ 训练家图片位置微调（用于对齐边框）</div>
+      <div class="infobox-row" style="margin:0;">
+        <div class="fg"><label>水平偏移 (${data.trainerImageOffset.x}px)</label><input type="range" min="-50" max="50" value="${data.trainerImageOffset.x}" oninput="data.trainerImageOffset.x=parseInt(this.value);this.previousElementSibling.textContent='水平偏移 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+        <div class="fg"><label>垂直偏移 (${data.trainerImageOffset.y}px)</label><input type="range" min="-50" max="50" value="${data.trainerImageOffset.y}" oninput="data.trainerImageOffset.y=parseInt(this.value);this.previousElementSibling.textContent='垂直偏移 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+        <div class="fg"><label>缩放 (${data.trainerImageOffset.scale}%)</label><input type="range" min="50" max="150" value="${data.trainerImageOffset.scale}" oninput="data.trainerImageOffset.scale=parseInt(this.value);this.previousElementSibling.textContent='缩放 ('+this.value+'%)';updateAll()" style="width:100%"></div>
+      </div>
+      <button onclick="data.trainerImageOffset={x:0,y:0,scale:100};renderPokemonParty();updateAll()" style="font-size:11px;padding:3px 10px;margin-top:4px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">重置位置</button>
+    </div>
+    <div style="font-weight:bold;margin:10px 0 5px;">队伍宝可梦（最多6只）</div>`;
+  p.pokemon.forEach((pkmn, i) => {
+    // 图片选项下拉（如果有获取到的图片选项）
+    let imageSelectHtml = '';
+    if (pkmn.imageOptions && pkmn.imageOptions.length > 0) {
+      imageSelectHtml = `<div class="fg"><label>选择图片</label>
+        <select oninput="selectPokemonImage(${i}, this.value)" style="font-size:12px;">
+          <option value="">-- 手动输入URL --</option>
+          ${pkmn.imageOptions.map((img, idx) => `<option value="${escAttr(img.url)}" ${pkmn.image===img.url?'selected':''}>${img.label}</option>`).join('')}
+        </select></div>`;
+    }
+    // 特性下拉（如果有获取到的特性列表）
+    let abilitySelectHtml = '';
+    if (pkmn.abilityOptions && pkmn.abilityOptions.length > 0) {
+      abilitySelectHtml = `<div class="fg"><label>特性（点击选择）</label>
+        <select oninput="data.pokemonParty.pokemon[${i}].ability=this.value;updateAll()" style="font-size:12px;">
+          <option value="">-- 手动输入 --</option>
+          ${pkmn.abilityOptions.map(ab => `<option value="${escAttr(ab.name)}" ${pkmn.ability===ab.name?'selected':''}>${ab.name}${ab.isHidden?'（隐藏特性）':''}</option>`).join('')}
+        </select></div>`;
+    }
+    html += `<div class="infobox-row">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-weight:bold;font-size:13px;">#${i+1} ${pkmn.name || '未命名'}</span>
+        <button class="btn-del" onclick="delPartyPokemon(${i})" style="margin:0;">✕</button>
+      </div>
+      <!-- 宝可梦搜索 -->
+      <div class="fg"><label>🔍 搜索宝可梦（中文名/英文名，选中自动填充）</label>
+        <input type="text" id="pkmn-search-${i}" placeholder="输入 皮卡丘 或 pikachu 搜索…" oninput="onPkmnSearchInput(${i}, this.value)" style="font-size:13px;" autocomplete="off">
+        <div id="pkmn-search-results-${i}" style="position:relative;z-index:100;"></div>
+      </div>
+      ${imageSelectHtml}
+      <div class="fg"><label>图片 URL</label><input type="url" value="${escAttr(pkmn.image)}" oninput="data.pokemonParty.pokemon[${i}].image=this.value;updateAll()"></div>
+      <div class="fg"><label>名字</label><input type="text" value="${escAttr(pkmn.name)}" oninput="data.pokemonParty.pokemon[${i}].name=this.value;updateAll()"></div>
+      <div class="fg" style="display:flex;gap:8px;">
+        <div style="flex:1;"><label>性别</label>
+          <select oninput="data.pokemonParty.pokemon[${i}].gender=this.value;updateAll()">
+            <option value="male" ${pkmn.gender==='male'?'selected':''}>♂</option>
+            <option value="female" ${pkmn.gender==='female'?'selected':''}>♀</option>
+            <option value="none" ${pkmn.gender==='none'?'selected':''}>未知</option>
+          </select>
+        </div>
+        <div style="flex:1;"><label>等级</label><input type="text" value="${escAttr(pkmn.level)}" oninput="data.pokemonParty.pokemon[${i}].level=this.value;updateAll()"></div>
+      </div>
+      <div class="fg" style="display:flex;gap:8px;">
+        <div style="flex:1;"><label>属性1</label><input type="text" value="${escAttr(pkmn.type1)}" oninput="data.pokemonParty.pokemon[${i}].type1=this.value;updateAll()"></div>
+        <div style="flex:1;"><label>属性2</label><input type="text" value="${escAttr(pkmn.type2)}" oninput="data.pokemonParty.pokemon[${i}].type2=this.value;updateAll()"></div>
+      </div>
+      ${abilitySelectHtml}
+      <div class="fg"><label>特性（手动输入）</label><input type="text" value="${escAttr(pkmn.ability)}" oninput="data.pokemonParty.pokemon[${i}].ability=this.value;updateAll()"></div>
+      <div class="fg"><label>携带物品</label><input type="text" value="${escAttr(pkmn.item)}" oninput="data.pokemonParty.pokemon[${i}].item=this.value;updateAll()"></div>
+      <div style="font-size:12px;color:#888;margin:6px 0 4px;">技能（${pkmn.moves.length}/4，可搜索自动填充属性和伤害类型）</div>`;
+    pkmn.moves.forEach((move, j) => {
+      html += `<div class="fg" style="margin-bottom:4px;">
+        <label style="font-size:11px;">技能${j+1}（搜索后点击结果自动填充）</label>
+        <input type="text" id="move-search-${i}-${j}" placeholder="输入 十万伏特 或 thunderbolt 搜索…" value="${escAttr(move.name)}" oninput="onMoveSearchInput(${i}, ${j}, this.value)" style="font-size:12px;" autocomplete="off">
+        <div id="move-search-results-${i}-${j}" style="position:relative;z-index:100;"></div>
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <div style="flex:1;"><label style="font-size:11px;">属性</label>
+            <select oninput="data.pokemonParty.pokemon[${i}].moves[${j}].type=this.value;data.pokemonParty.pokemon[${i}].moves[${j}].typeEn=this.value;updateAll()" style="font-size:11px;">
+              <option value="">--</option>
+              ${Object.entries(TYPE_CN).map(([en, cn]) => `<option value="${en}" ${(move.type===en||move.typeEn===en)?'selected':''}>${cn}</option>`).join('')}
+            </select>
+          </div>
+          <div style="flex:1;"><label style="font-size:11px;">伤害类型</label>
+            <select oninput="data.pokemonParty.pokemon[${i}].moves[${j}].category=this.value;updateAll()" style="font-size:11px;">
+              <option value="物理" ${move.category==='物理'?'selected':''}>物理</option>
+              <option value="特殊" ${move.category==='特殊'?'selected':''}>特殊</option>
+              <option value="变化" ${move.category==='变化'?'selected':''}>变化</option>
+            </select>
+          </div>
+          <button class="btn-del" onclick="delMove(${i},${j})" style="padding:2px 8px;font-size:11px;align-self:flex-end;">✕</button>
+        </div>
+      </div>`;
+    });
+    if (pkmn.moves.length < 4) {
+      html += `<button class="btn-add" onclick="addMove(${i})" style="margin-top:4px;font-size:12px;">+ 添加技能</button>`;
+    }
+    html += `</div>`;
+  });
+  if (p.pokemon.length < 6) {
+    html += `<button class="btn-add" onclick="addPartyPokemon()">+ 添加宝可梦</button>`;
+  }
+  container.innerHTML = html;
+}
+
+// 宝可梦搜索输入
+let pkmnSearchTimers = {};
+async function onPkmnSearchInput(pkmnIdx, value) {
+  if (pkmnSearchTimers[pkmnIdx]) clearTimeout(pkmnSearchTimers[pkmnIdx]);
+  if (!value || value.length < 1) {
+    document.getElementById('pkmn-search-results-' + pkmnIdx).innerHTML = '';
+    return;
+  }
+  pkmnSearchTimers[pkmnIdx] = setTimeout(async () => {
+    const results = await searchPokemon(value);
+    const container = document.getElementById('pkmn-search-results-' + pkmnIdx);
+    if (!container) return;
+    if (results.length === 0) {
+      container.innerHTML = '<div style="background:#fff;border:1px solid #ddd;padding:6px;font-size:12px;color:#999;">未找到匹配的宝可梦</div>';
+      return;
+    }
+    container.innerHTML = results.map(p =>
+      `<div onclick="selectPokemon(${pkmnIdx}, ${p.id})" style="background:#fff;border:1px solid #ddd;border-top:none;padding:6px 10px;font-size:12px;cursor:pointer;" onmouseover="this.style.background='#e8f0fe'" onmouseout="this.style.background='#fff'">
+        <b>${p.cnName}</b> <span style="color:#999;">#${p.id} ${p.name}</span>
+      </div>`
+    ).join('');
+  }, 300);
+}
+
+// 选中宝可梦，自动填充数据
+async function selectPokemon(pkmnIdx, pokemonId) {
+  document.getElementById('pkmn-search-results-' + pkmnIdx).innerHTML = '';
+  document.getElementById('pkmn-search-' + pkmnIdx).value = '加载中…';
+  const full = await fetchPokemonFull(pokemonId);
+  if (!full) {
+    document.getElementById('pkmn-search-' + pkmnIdx).value = '';
+    alert('获取宝可梦数据失败');
+    return;
+  }
+  const pkmn = data.pokemonParty.pokemon[pkmnIdx];
+  pkmn.name = full.name;
+  pkmn.image = full.imageOptions.length > 0 ? full.imageOptions[0].url : '';
+  pkmn.imageOptions = full.imageOptions;
+  pkmn.type1 = full.types.length > 0 ? full.types[0].name : '';
+  pkmn.type2 = full.types.length > 1 ? full.types[1].name : '';
+  pkmn.ability = full.abilities.length > 0 ? full.abilities[0].name : '';
+  pkmn.abilityOptions = full.abilities;
+  document.getElementById('pkmn-search-' + pkmnIdx).value = full.name;
+  renderPokemonParty();
+  updateAll();
+}
+
+// 选择宝可梦图片
+function selectPokemonImage(pkmnIdx, url) {
+  if (!url) return;
+  data.pokemonParty.pokemon[pkmnIdx].image = url;
+  updateAll();
+}
+
+// 技能搜索输入
+let moveSearchTimers = {};
+async function onMoveSearchInput(pkmnIdx, moveIdx, value) {
+  const key = pkmnIdx + '-' + moveIdx;
+  if (moveSearchTimers[key]) clearTimeout(moveSearchTimers[key]);
+  if (!value || value.length < 1) {
+    const el = document.getElementById('move-search-results-' + key);
+    if (el) el.innerHTML = '';
+    return;
+  }
+  moveSearchTimers[key] = setTimeout(async () => {
+    const results = await searchMoves(value);
+    const container = document.getElementById('move-search-results-' + key);
+    if (!container) return;
+    if (results.length === 0) {
+      container.innerHTML = '<div style="background:#fff;border:1px solid #ddd;padding:6px;font-size:12px;color:#999;">未找到匹配的技能</div>';
+      return;
+    }
+    container.innerHTML = results.map(m =>
+      `<div onclick="selectMove(${pkmnIdx}, ${moveIdx}, '${escAttr(m.url)}')" style="background:#fff;border:1px solid #ddd;border-top:none;padding:6px 10px;font-size:12px;cursor:pointer;" onmouseover="this.style.background='#e8f0fe'" onmouseout="this.style.background='#fff'">
+        <b>${m.name}</b> <span style="color:#999;">${m.enName}</span>
+        <span style="float:right;color:#666;">${m.type} / ${m.category}</span>
+      </div>`
+    ).join('');
+  }, 300);
+}
+
+// 选中技能，自动填充
+async function selectMove(pkmnIdx, moveIdx, moveUrl) {
+  const key = pkmnIdx + '-' + moveIdx;
+  document.getElementById('move-search-results-' + key).innerHTML = '';
+  const detail = await getMoveDetail(moveUrl);
+  if (!detail) return;
+  const move = data.pokemonParty.pokemon[pkmnIdx].moves[moveIdx];
+  move.name = detail.name;
+  move.type = detail.type; // 英文属性名（用于底色判断，显示时自动转中文）
+  move.typeEn = detail.type; // 保留英文属性名
+  // 转换伤害类型为中文
+  move.category = CATEGORY_CN[detail.category] || detail.category;
+  document.getElementById('move-search-' + key).value = detail.name;
+  renderPokemonParty();
+  updateAll();
+}
+function addPartyPokemon() {
+  if (data.pokemonParty.pokemon.length >= 6) return;
+  data.pokemonParty.pokemon.push({image:'', name:'新宝可梦', gender:'male', level:'50', type1:'一般', type2:'', ability:'', item:'None', moves:[
+    {name:'', type:'normal', typeEn:'normal', category:'物理'},
+    {name:'', type:'normal', typeEn:'normal', category:'物理'},
+    {name:'', type:'normal', typeEn:'normal', category:'物理'},
+    {name:'', type:'normal', typeEn:'normal', category:'物理'}
+  ]});
+  renderPokemonParty();
+  updateAll();
+}
+function delPartyPokemon(i) {
+  data.pokemonParty.pokemon.splice(i, 1);
+  renderPokemonParty();
+  updateAll();
+}
+function addMove(pkmnIdx) {
+  if (data.pokemonParty.pokemon[pkmnIdx].moves.length >= 4) return;
+  data.pokemonParty.pokemon[pkmnIdx].moves.push({name:'', type:'normal', typeEn:'normal', category:'物理'});
+  renderPokemonParty();
+  updateAll();
+}
+function delMove(pkmnIdx, moveIdx) {
+  data.pokemonParty.pokemon[pkmnIdx].moves.splice(moveIdx, 1);
+  renderPokemonParty();
+  updateAll();
+}
+
+// ==================== 富文本编辑 ====================
+let activeEditor = null;
+document.addEventListener('focusin', function(e) {
+  if (e.target.classList.contains('rich-editor')) activeEditor = e.target;
+});
+// 统一同步富文本编辑器数据到 data 对象
+function syncEditorData(editor) {
+  const id = editor.id;
+  if (id === 'summary-editor') data.summary = editor.innerHTML;
+  else if (id.startsWith('chapter-editor-')) {
+    const idx = parseInt(id.replace('chapter-editor-',''));
+    data.chapters[idx].content = editor.innerHTML;
+  }
+  else if (id.startsWith('infobox-value-')) {
+    const idx = parseInt(id.replace('infobox-value-',''));
+    data.infoboxRows[idx].value = editor.innerHTML;
+  }
+  else if (id === 'rt-page-title') data.pageTitle = editor.innerHTML;
+  else if (id === 'rt-disambiguation') data.disambiguation = editor.innerHTML;
+  else if (id === 'rt-char-name') data.charName = editor.innerHTML;
+  else if (id === 'rt-jp-name') data.jpName = editor.innerHTML;
+  else if (id === 'rt-en-name') data.enName = editor.innerHTML;
+  else if (id === 'rt-slogan') data.slogan = editor.innerHTML;
+  else if (id === 'rt-image-caption') data.imageCaption = editor.innerHTML;
+}
+// 解析工具栏参数：数字=章节索引，字符串=编辑器ID
+function resolveEditor(arg) {
+  if (arg === undefined) return activeEditor;
+  if (typeof arg === 'number') return document.getElementById('chapter-editor-' + arg);
+  return document.getElementById(arg);
+}
+function rtCmd(cmd, arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { alert('请先点击编辑区域'); return; }
+  editor.focus();
+  document.execCommand(cmd, false, null);
+  syncEditorData(editor);
+  updateAll();
+}
+function rtLink(arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { alert('请先点击编辑区域'); return; }
+  const url = prompt('请输入链接地址（URL）：', 'https://');
+  if (url) {
+    editor.focus();
+    document.execCommand('createLink', false, url);
+    editor.querySelectorAll('a').forEach(a => { if(!a.style.color) a.style.color = '#3366cc'; });
+    syncEditorData(editor);
+    updateAll();
+  }
+}
+
+// ==================== 文字颜色（优化版：预设颜色面板） ====================
+const PRESET_COLORS = [
+  '#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#ffffff',
+  '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff', '#0000ff',
+  '#9900ff', '#ff00ff', '#ff6699', '#663300', '#336600', '#003366'
+];
+let recentColors = ['#3366cc', '#ff0000', '#00aa00'];
+let activeColorEditor = null;
+let activeColorPanel = null;
+
+function rtColor(arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { showToast('请先点击编辑区域'); return; }
+  activeColorEditor = editor;
+  editor.focus();
+  const sel = window.getSelection();
+  if (!sel || !sel.toString()) { showToast('请先选中要变色的文字'); return; }
+  // 关闭其他颜色面板
+  document.querySelectorAll('.color-panel.open').forEach(p => p.classList.remove('open'));
+  // 找到当前按钮对应的颜色面板
+  const btn = event.target.closest('.rt-color-btn');
+  if (btn) {
+    let panel = btn.querySelector('.color-panel');
+    if (!panel) {
+      panel = createColorPanel();
+      btn.appendChild(panel);
+    }
+    // 计算按钮位置，设置 fixed 定位
+    const rect = btn.getBoundingClientRect();
+    panel.style.top = (rect.bottom + 4) + 'px';
+    panel.style.left = rect.left + 'px';
+    // 防止超出右边界
+    const panelWidth = 180;
+    if (rect.left + panelWidth > window.innerWidth) {
+      panel.style.left = (window.innerWidth - panelWidth - 10) + 'px';
+    }
+    panel.classList.toggle('open');
+    activeColorPanel = panel;
+  }
+}
+
+function createColorPanel() {
+  const panel = document.createElement('div');
+  panel.className = 'color-panel';
+  let html = '<div class="panel-title">最近使用</div><div class="recent-colors">';
+  recentColors.forEach(c => {
+    html += `<div class="color-swatch" style="background:${c}" data-color="${c}" title="${c}"></div>`;
+  });
+  html += '</div><div class="panel-title">常用颜色</div><div class="color-grid">';
+  PRESET_COLORS.forEach(c => {
+    html += `<div class="color-swatch" style="background:${c}" data-color="${c}" title="${c}"></div>`;
+  });
+  html += '</div><button class="custom-color-btn" onclick="document.getElementById(\'rt-color-picker\').click()">🎨 自定义颜色...</button>';
+  panel.innerHTML = html;
+  // 点击颜色块应用颜色
+  panel.querySelectorAll('.color-swatch').forEach(sw => {
+    sw.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      applyTextColor(sw.dataset.color);
+    });
+  });
+  return panel;
+}
+
+function applyTextColor(color) {
+  if (activeColorEditor && color) {
+    activeColorEditor.focus();
+    document.execCommand('foreColor', false, color);
+    syncEditorData(activeColorEditor);
+    updateAll();
+    // 更新最近使用颜色
+    recentColors = [color, ...recentColors.filter(c => c !== color)].slice(0, 5);
+    // 更新所有颜色面板的最近使用颜色
+    document.querySelectorAll('.color-panel').forEach(p => {
+      const recentContainer = p.querySelector('.recent-colors');
+      if (recentContainer) {
+        recentContainer.innerHTML = recentColors.map(c =>
+          `<div class="color-swatch" style="background:${c}" data-color="${c}" title="${c}"></div>`
+        ).join('');
+        recentContainer.querySelectorAll('.color-swatch').forEach(sw => {
+          sw.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            applyTextColor(sw.dataset.color);
+          });
+        });
+      }
+    });
+    // 更新颜色按钮的指示器
+    document.querySelectorAll('.rt-color-btn .color-indicator').forEach(ind => {
+      ind.style.background = color;
+    });
+    // 关闭颜色面板
+    document.querySelectorAll('.color-panel.open').forEach(p => p.classList.remove('open'));
+  }
+}
+
+function applyColor() {
+  const color = document.getElementById('rt-color-picker').value;
+  applyTextColor(color);
+}
+
+// 点击页面其他地方关闭颜色面板
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.rt-color-btn')) {
+    document.querySelectorAll('.color-panel.open').forEach(p => p.classList.remove('open'));
+  }
+});
+
+// 给所有富文本工具栏动态加颜色按钮（静态和动态生成的都适用）
+function addColorButtonToAll() {
+  document.querySelectorAll('.rt-toolbar').forEach(toolbar => {
+    if (toolbar.querySelector('.rt-color-btn')) return;
+    const editor = toolbar.closest('.rt-wrap') ? toolbar.closest('.rt-wrap').querySelector('.rich-editor') : null;
+    if (!editor) return;
+    const btn = document.createElement('button');
+    btn.className = 'rt-color-btn';
+    btn.title = '文字颜色（先选中文字再点）';
+    btn.innerHTML = '🎨<span class="color-indicator"></span>';
+    btn.onclick = (e) => { e.stopPropagation(); rtColor(editor.id); };
+    const clearBtn = toolbar.querySelector('button[onclick*="removeFormat"]');
+    if (clearBtn) toolbar.insertBefore(btn, clearBtn);
+    else toolbar.appendChild(btn);
+  });
+}
+
+// ==================== 代码生成 ====================
+function generateCode() {
+  const d = data;
+  const t = d.theme;
+
+  // 信息框表格行
+  let rowsHtml = '';
+  const n = d.infoboxRows.length;
+  d.infoboxRows.forEach((row, i) => {
+    let labelStyle = `background-color:${t.light}; width:33.2%; border-right:1px solid ${t.divider}; border-top:none!important; white-space:nowrap;`;
+    let valueStyle = `width:66.8%; border-top:none!important;`;
+    if (i === 0) { labelStyle += 'border-radius:10px 0 0 0;'; valueStyle += 'border-radius:0 10px 0 0;'; }
+    if (i === n - 1) { labelStyle += 'border-radius:0 0 0 10px;'; valueStyle += 'border-radius:0 0 10px 0;'; }
+    if (i < n - 1) { labelStyle += 'border-bottom:1px solid ' + t.divider + ';'; valueStyle += 'border-bottom:1px solid ' + t.divider + ';'; }
+    rowsHtml += `
+            <tr>
+              <td class="text-right font-weight-bold py-1 col-4" scope="row" style="${labelStyle}">${row.label}</td>
+              <td class="bg-white py-1 px-1" style="${valueStyle}">${row.value}</td>
+            </tr>`;
+  });
+
+  // 章节（细节、名字来源放在宝可梦后面）
+  let chaptersHtml = '';
+  let afterChaptersHtml = '';
+  let tocHtml = '';
+  let afterTocHtml = '';
+  const AFTER_TITLES = ['细节', '名字来源'];
+  let normalIdx = 0;
+  let afterIdx = 0;
+  d.chapters.forEach((ch, i) => {
+    // 章节图片框（右浮动）
+    let chImagesHtml = '';
+    if (ch.images && ch.images.length > 0) {
+      ch.images.forEach(img => {
+        if (!img.url) return;
+        const w = img.width || '220px';
+        const pos = img.position || 'right';
+        let posStyle = '';
+        if (pos === 'left') {
+          posStyle = 'float:left;clear:left;margin:0 15px 10px 0;';
+        } else if (pos === 'center') {
+          posStyle = 'margin:0 auto 10px;float:none;display:block;';
+        } else {
+          posStyle = 'float:right;clear:right;margin:0 0 10px 15px;';
+        }
+        const captionHtml = img.caption ? `<p style="font-size:13px;text-align:center;margin:6px 0 0;color:#555;">${img.caption}</p>` : '';
+        chImagesHtml += `
+      <div class="card bg-white rounded-0 p-1" style="${posStyle}max-width:${w};width:${w};">
+        <img src="${escAttr(img.url)}" style="width:100%;display:block;">
+        ${captionHtml}
+      </div>`;
+      });
+    }
+    const isAfter = AFTER_TITLES.includes(ch.title);
+    if (isAfter) {
+      afterIdx++;
+      const chId = 'title-after-' + afterIdx;
+      afterChaptersHtml += `
+      <h2 id="${chId}" style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">${ch.title}</h2>
+      <div style="overflow:hidden;">
+        ${chImagesHtml}
+        <div style="font-size:15px;line-height:1.6;margin-top:10px;">${ch.content}</div>
+      </div>`;
+    } else {
+      normalIdx++;
+      const chId = 'title' + normalIdx;
+      chaptersHtml += `
+      <h2 id="${chId}" style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">${ch.title}</h2>
+      <div style="overflow:hidden;">
+        ${chImagesHtml}
+        <div style="font-size:15px;line-height:1.6;margin-top:10px;">${ch.content}</div>
+      </div>`;
+      tocHtml += `<div style="margin:4px 0;"><a href="#${chId}" style="color:#3366cc;text-decoration:none;">${normalIdx}. ${ch.title}</a></div>`;
+    }
+  });
+  // 目录：人际关系和宝可梦队伍（在普通章节之后、后置章节之前）
+  const relCount = (d.relationshipsEnabled && d.relationships.length > 0) ? 1 : 0;
+  const pkmCount = d.pokemonEnabled ? 1 : 0;
+  if (relCount) {
+    tocHtml += `<div style="margin:4px 0;"><a href="#title8" style="color:#3366cc;text-decoration:none;">${normalIdx+1}. 关系</a></div>`;
+  }
+  if (pkmCount) {
+    tocHtml += `<div style="margin:4px 0;"><a href="#title9" style="color:#3366cc;text-decoration:none;">${normalIdx+relCount+1}. 宝可梦</a></div>`;
+  }
+  // 后置章节的目录（细节、名字来源）
+  if (afterChaptersHtml) {
+    afterChaptersHtml = afterChaptersHtml.replace(/id="title-after-(\d+)"/g, (m, n) => `id="title${normalIdx+relCount+pkmCount+parseInt(n)}"`);
+    let afterTocIdx = normalIdx + relCount + pkmCount;
+    d.chapters.forEach((ch) => {
+      if (AFTER_TITLES.includes(ch.title)) {
+        afterTocIdx++;
+        tocHtml += `<div style="margin:4px 0;"><a href="#title${afterTocIdx}" style="color:#3366cc;text-decoration:none;">${afterTocIdx}. ${ch.title}</a></div>`;
+      }
+    });
+  }
+
+  // 页脚分类
+  const catsHtml = (d.footerCatsEnabled && d.footerCategories.length > 0) ? d.footerCategories.map(c =>
+    `<a href="#" style="color:#3366cc;background:#eaf3ff;padding:2px 8px;border-radius:3px;margin-right:5px;font-size:12px;text-decoration:none;">${c}</a>`
+  ).join('') : '';
+  const footerSectionHtml = catsHtml ? `
+      <div style="margin-top:30px;padding:12px 15px;border-top:1px solid #a2a9b1;font-size:12px;">
+        <strong style="margin-right:6px;">分类：</strong>${catsHtml}
+      </div>` : '';
+
+  // 日文名+英文名（必须同时非空才显示，用纯文本判断）
+  const showJpEn = getPlainText(d.jpName) && getPlainText(d.enName);
+  const jpEnHtml = showJpEn
+    ? `<p class="text-center text-white font-italic" style="margin:5px 0 8px;font-size:15px;"><strong>${d.jpName} ${d.enName}</strong></p>`
+    : '';
+  // 标语（非空才显示）
+  const showSlogan = getPlainText(d.slogan);
+  const sloganHtml = showSlogan
+    ? `<div class="card text-center font-italic text-dark mx-1" style="font-size:12px;background-color:${t.light};padding:4px 8px;">${d.slogan}</div>`
+    : '';
+  // 图片说明文字（非空才显示）
+  const showImageCaption = getPlainText(d.imageCaption);
+  const imageCaptionHtml = showImageCaption
+    ? `<p class="text-center mb-0" style="margin:6px 0;font-size:13px;"><span style="color:#3366cc;">${d.imageCaption}</span></p>`
+    : '';
+
+  // 人际关系
+  let relationshipsHtml = '';
+  d.relationships.forEach((rel, i) => {
+    relationshipsHtml += `
+    <div id="subtitle8-${i+1}" class="my-2">
+      <h4 class="font-weight-bold" style="font-size:17px;margin-top:16px;">${rel.name}</h4>
+      <p>${rel.desc}</p>
+    </div>`;
+  });
+  const relationshipsSectionHtml = (d.relationshipsEnabled && d.relationships.length > 0) ? `
+  <div id="title8" class="my-3">
+    <h2 style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">关系</h2>
+    ${relationshipsHtml}
+  </div>` : '';
+
+  // 宝可梦队伍
+  const party = d.pokemonParty;
+  // 生成6个精灵球，有宝可梦的位置显示红球，空位显示灰球（CSS滤镜）
+  let pokeballs = '';
+  for (let i = 0; i < 6; i++) {
+    if (i < party.pokemon.length) {
+      // 有宝可梦：正常红色精灵球
+      pokeballs += '<img src="https://f2.toyhou.se/file/f2-toyhou-se/images/76431707_4K812PTT4nonDeN.png" style="width:16px;height:16px">';
+    } else {
+      // 空位：灰色半透明精灵球（用CSS滤镜变灰）
+      pokeballs += '<img src="https://f2.toyhou.se/file/f2-toyhou-se/images/76431707_4K812PTT4nonDeN.png" style="width:16px;height:16px;filter:grayscale(100%);opacity:0.35">';
+    }
+  }
+  let partyPokemonHtml = '';
+  party.pokemon.forEach((pkmn, i) => {
+    // 性别符号（带圆形背景的Unicode符号，雌性红底白♀，雄性蓝底白♂）
+    let genderSymbol = '';
+    if (pkmn.gender === 'female') {
+      genderSymbol = '<span style="display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background-color:#C00;color:#fff;font-size:15px;font-weight:bold;margin-left:4px;vertical-align:middle;">♀</span>';
+    } else if (pkmn.gender === 'male') {
+      genderSymbol = '<span style="display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background-color:#00C;color:#fff;font-size:15px;font-weight:bold;margin-left:4px;vertical-align:middle;">♂</span>';
+    }
+    // 根据第一属性获取主题色（卡片底色/边框/属性标签，支持中文和英文属性名）
+    const pkmnTheme = TYPE_THEME[pkmn.type1] || {main: getTypeColor(pkmn.type1), light:'#C6C6A7', dark:'#6D6D4E'};
+    // 生成属性标签HTML（支持双属性，每个标签用自己的属性色，文字垂直水平居中）
+    let typeLabelsHtml = '';
+    if (pkmn.type1) {
+      const t1Color = getTypeColor(pkmn.type1);
+      typeLabelsHtml += `<div class="card mx-auto rounded-0 border-0 mb-1" style="width:55px;height:18px;border-radius:2px;display:flex;justify-content:center;align-items:center;background-color:${t1Color}"><span style="font-size:11px;font-weight:bold;color:#fff;line-height:1;">${pkmn.type1}</span></div>`;
+    }
+    if (pkmn.type2) {
+      const t2Color = getTypeColor(pkmn.type2);
+      typeLabelsHtml += `<div class="card mx-auto rounded-0 border-0 mb-0" style="width:55px;height:18px;border-radius:2px;display:flex;justify-content:center;align-items:center;background-color:${t2Color}"><span style="font-size:11px;font-weight:bold;color:#fff;line-height:1;">${pkmn.type2}</span></div>`;
+    }
+    let movesLeft = '';
+    let movesRight = '';
+    pkmn.moves.forEach((move, j) => {
+      // 根据技能属性自动对应底色（支持中文和英文属性名）
+      const typeEn = move.typeEn || move.type || 'normal';
+      const borderColor = getTypeColor(typeEn);
+      const typeCn = TYPE_CN[typeEn] || move.type || '一般';
+      // 根据伤害类型自动对应颜色
+      const catColor = CATEGORY_COLORS[move.category] || {bg: '#C92112', text: '#F67A1A'};
+      const moveHtml = `
+        <div class="card bg-white mb-1" style="border:2px solid ${borderColor}">
+          <p class="mx-auto" style="text-align:center;font-weight:bold;margin:6px 0;">${move.name}</p>
+          <div class="row m-1 text-center" style="margin:0 4px 4px;">
+            <div class="card text-white rounded-0 p-0 col-6 mx-auto" style="background-color:${borderColor};text-align:center;font-weight:bold;line-height:18px;">${typeCn}</div>
+            <div class="card rounded-0 p-0 col-6 mx-auto" style="background-color:${catColor.bg};color:${catColor.text};text-align:center;font-weight:bold;line-height:18px;">${move.category}</div>
+          </div>
+        </div>`;
+      if (j < 2) movesLeft += moveHtml;
+      else movesRight += moveHtml;
+    });
+    partyPokemonHtml += `
+    <div class="col-12 col-md-4 mt-3">
+      <div class="card p-1 mx-auto" style="background-color:${pkmnTheme.light};border:2px solid ${pkmnTheme.dark};">
+        <div class="row no-gutters" style="align-items:center;">
+          <div class="col">
+            <div class="card bg-white text-dark mb-1" style="display:flex;justify-content:center;align-items:center;">
+              <img src="${escAttr(pkmn.image)}" class="mx-auto" style="width:100px;height:100px">
+            </div>
+            <div class="card bg-white text-center my-1" style="font-size:13px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:60px;padding:4px 0;">
+              <p class="mb-0" style="font-weight:bold;display:flex;align-items:center;justify-content:center;line-height:1.4;">${pkmn.name}${genderSymbol}</p>
+              <p style="margin:2px 0 0;line-height:1.4;">Lv.${pkmn.level}</p>
+            </div>
+          </div>
+          <div class="col text-center" style="font-size:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+            <div style="margin-bottom:6px;">
+              <p class="mb-0" style="font-weight:bold;line-height:1.4;">属性</p>
+              ${typeLabelsHtml}
+            </div>
+            <div style="margin-bottom:6px;">
+              <p class="mb-0" style="font-weight:bold;line-height:1.4;">特性</p>
+              <p class="mb-0" style="font-size:13px;text-align:center;line-height:1.4;">${pkmn.ability}</p>
+            </div>
+            <div>
+              <p class="mb-0" style="font-weight:bold;line-height:1.4;">携带物品</p>
+              <p style="font-size:13px;text-align:center;line-height:1.4;margin:0;">${pkmn.item}</p>
+            </div>
+          </div>
+        </div>
+        <div class="row no-gutters" style="font-size:12px">
+          <div class="col col-6">${movesLeft}</div>
+          <div class="col col-6">${movesRight}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  const pokemonSectionHtml = d.pokemonEnabled ? `
+  <div id="title9" class="my-3">
+    <h2 style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">宝可梦</h2>
+    <div id="subtitle9-1" class="my-2">
+      <h4 class="font-weight-bold" style="font-size:17px;margin-top:16px;">队伍</h4>
+      <div class="card py-1 text-dark" style="max-width:730px;background-color:${d.pokemonTheme.bg}">
+        <div class="row no-gutters mx-auto">
+          <div class="col ml-1">
+            <div class="card p-1" style="width:100px;background-color:${d.pokemonTheme.light};border-radius:30px;border:2px solid ${d.pokemonTheme.border};overflow:hidden;">
+              <img src="${escAttr(party.trainerImage)}" class="mx-auto" style="width:100px;transform:translate(${d.trainerImageOffset.x}px, ${d.trainerImageOffset.y}px) scale(${d.trainerImageOffset.scale/100});display:block;">
+            </div>
+          </div>
+          <div class="col mx-1" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+            <div class="card border-0 text-center font-weight-bold" style="display:inline-block;width:auto;background-color:${d.pokemonTheme.light};border-radius:30px;padding:10px 20px;margin-bottom:10px;white-space:nowrap;">
+              <p style="font-size:13px;margin:0 0 4px 0;line-height:1.3;white-space:nowrap;">${party.trainerClass}</p>
+              <p style="font-size:20px;margin:0;line-height:1.3;white-space:nowrap;">${party.trainerName}</p>
+            </div>
+            <div class="card py-1 px-0" style="background-color:${d.pokemonTheme.light};border-radius:30px;white-space:nowrap;">
+              <div class="row mx-auto">${pokeballs}</div>
+            </div>
+          </div>
+          <div class="col mr-1 text-center pt-1 pt-md-4">
+            <p><a href="#toggle2" data-toggle="collapse" id="toggle2-btn" style="color:#3366cc;text-decoration:none;">[显示]</a></p>
+          </div>
+        </div>
+        <div class="collapse" id="toggle2">
+          <div class="row p-1">${partyPokemonHtml}</div>
+        </div>
+      </div>
+    </div>
+  </div>` : '';
+
+  return `<!-- ========== 神奇宝贝百科风格代码生成器模板 ========== -->
+<!-- 生成器：神奇宝贝百科风格代码生成器 -->
+<div class="container-fluid" style="padding-left:1px;padding-right:1px;">
+  <div class="card bg-light border-0" style="border-radius:0;">
+    <!-- 标题区 -->
+    <div class="container pt-2 pb-0 text-dark">
+      <p style="margin:0;"><span style="font-size:26px;font-weight:normal;">${d.pageTitle}</span></p>
+      <hr style="border:none;border-top:1px solid #a2a9b1;margin:8px 0;">
+      <p style="font-size:15px;font-style:italic;margin:0;color:#555;line-height:1.5;">${d.disambiguation}</p>
+      <hr style="border:none;border-top:1px solid #a2a9b1;margin:8px 0 12px 0;">
+    </div>
+    <!-- 正文区 -->
+    <div class="container text-dark">
+      <!-- 角色信息框 -->
+      <div class="card col-12 col-md-3 m-1 m-md-3 p-0" style="float:right;background-color:${t.primary};border:2px solid ${t.dark}!important;border-radius:10px;overflow:hidden;box-shadow:none!important;z-index:5;">
+        <div class="card border-0" style="background-color:${t.primary};padding-top:5px;border-radius:0;box-shadow:none!important;">
+          <p class="text-center text-white" style="font-size:22px;font-weight:bold;margin:0;">${d.charName}</p>
+          ${jpEnHtml}
+          ${sloganHtml}
+          <div class="row mx-auto p-1 w-100">
+            <div class="card w-100 bg-white border-0 p-0" style="border-radius:0;box-shadow:none!important;">
+              <img class="mx-auto fr-fic fr-dib w-100" style="max-height:420px;object-fit:contain;" src="${d.imageUrl}" alt="${d.charName}">
+              ${imageCaptionHtml}
+            </div>
+          </div>
+        </div>
+        <table style="font-size:13px;padding:0;margin:0;width:100%;border-collapse:collapse;border:none!important;">
+          <tbody>${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+      <!-- 简述 -->
+      <div class="container mt-2 p-1" style="font-size:15px;line-height:1.6;">${d.summary}</div>
+      <!-- 目录 -->
+      <div class="card" style="display:inline-block;min-width:200px;margin:10px 15px;max-width:300px;">
+        <div class="card-header" style="background:#f8f9fa;font-weight:bold;font-size:14px;padding:8px 12px;">目录 <a data-toggle="collapse" href="#toc-body" id="toc-btn" style="float:right;cursor:pointer;color:#3366cc;font-weight:normal;font-size:12px;text-decoration:none;">[显示]</a></div>
+        <div id="toc-body" class="collapse card-body" style="padding:10px 12px;font-size:13px;">
+          ${tocHtml}
+        </div>
+      </div>
+      <!-- 正文章节 -->${chaptersHtml}
+      <!-- 人际关系 -->${relationshipsSectionHtml}
+      <!-- 宝可梦队伍 -->${pokemonSectionHtml}
+      <!-- 后置章节（细节、名字来源） -->${afterChaptersHtml}
+      <!-- 页脚分类 -->${footerSectionHtml}
+    </div>
+  </div>
+</div>`;
+}
+
+// ==================== 预览更新 ====================
+function updatePreview(code) {
+  const iframe = document.getElementById('preview');
+  // 记录当前状态
+  recordPreviewState();
+
+  // 预览时用 container-fluid 占满宽度（生成代码仍保持 container，复制到 Toyhouse 后正确）
+  let previewCode = code
+    .replace(/class="container pt-2 pb-0 text-dark"/g, 'class="container-fluid pt-2 pb-0 text-dark"')
+    .replace(/class="container text-dark"/g, 'class="container-fluid text-dark"')
+    .replace(/class="container mt-2 p-1"/g, 'class="container-fluid mt-2 p-1"');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>body{margin:0;padding:0;font-family:-apple-system,'Microsoft YaHei',sans-serif;background:#fff;min-height:100vh;}</style>
+    </head><body>${previewCode}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"><\/script>
+    <script>
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a[href^="#"]');
+      if (a) {
+        e.preventDefault();
+        var target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+    // 折叠开关文字切换（根据状态显示"显示"或"折叠"）
+    function setupToggleText(toggleId, btnId) {
+      var toggle = document.getElementById(toggleId);
+      var btn = document.getElementById(btnId);
+      if (!toggle || !btn) return;
+      function updateText() {
+        btn.textContent = toggle.classList.contains('show') ? '[折叠]' : '[显示]';
+      }
+      updateText();
+      // 用MutationObserver监听class变化，不依赖Bootstrap事件
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.attributeName === 'class') {
+            updateText();
+          }
+        });
+      });
+      observer.observe(toggle, {attributes: true, attributeFilter: ['class']});
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      setupToggleText('toggle2', 'toggle2-btn');
+      setupToggleText('toc-body', 'toc-btn');
+    });
+    if (document.readyState !== 'loading') {
+      setupToggleText('toggle2', 'toggle2-btn');
+      setupToggleText('toc-body', 'toc-btn');
+    }
+    <\/script>
+    </body></html>`;
+
+  // iframe加载完成后恢复状态（多次尝试）
+  iframe.onload = function() {
+    restorePreviewState();
+  };
+
+  iframe.srcdoc = html;
+}
+
+// ==================== 统一更新（防抖） ====================
+function updateAll() {
+  // 清除之前的定时器
+  if (updateAllTimer) {
+    clearTimeout(updateAllTimer);
+  }
+  // 防抖：300ms内多次调用只执行最后一次
+  updateAllTimer = setTimeout(() => {
+    const code = generateCode();
+    document.getElementById('code-output').value = code;
+    updatePreview(code);
+  }, 300);
+}
+
+// ==================== 代码面板 ====================
+function toggleCodePanel() {
+  document.getElementById('code-panel').classList.toggle('open');
+}
+function copyCode() {
+  const ta = document.getElementById('code-output');
+  ta.select();
+  navigator.clipboard.writeText(ta.value).then(() => {
+    showToast('✅ 代码已复制到剪贴板！');
+  }).catch(() => {
+    document.execCommand('copy');
+    showToast('✅ 代码已复制！');
+  });
+}
+
+// ==================== 导入导出 ====================
+function exportConfig() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'toyhouse-wiki-config-' + (data.charName || 'character') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('💾 配置已导出！');
+}
+function importConfig() {
+  document.getElementById('import-file').click();
+}
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      data = Object.assign(data, imported);
+      // 同步到表单
+      document.getElementById('theme-primary').value = data.theme.primary;
+      document.getElementById('theme-dark').value = data.theme.dark;
+      document.getElementById('theme-light').value = data.theme.light;
+      document.getElementById('theme-divider').value = data.theme.divider;
+      document.getElementById('theme-primary-picker').value = data.theme.primary;
+      document.getElementById('theme-dark-picker').value = data.theme.dark;
+      document.getElementById('theme-light-picker').value = data.theme.light;
+      document.getElementById('theme-divider-picker').value = data.theme.divider;
+      // 同步宝可梦队伍颜色选择器
+      if (data.pokemonTheme) {
+        document.getElementById('pkmn-theme-bg').value = data.pokemonTheme.bg;
+        document.getElementById('pkmn-theme-light').value = data.pokemonTheme.light;
+        document.getElementById('pkmn-theme-border').value = data.pokemonTheme.border;
+        document.getElementById('pkmn-theme-bg-picker').value = data.pokemonTheme.bg;
+        document.getElementById('pkmn-theme-light-picker').value = data.pokemonTheme.light;
+        document.getElementById('pkmn-theme-border-picker').value = data.pokemonTheme.border;
+      }
+      document.getElementById('rt-page-title').innerHTML = data.pageTitle;
+      document.getElementById('rt-disambiguation').innerHTML = data.disambiguation;
+      document.getElementById('rt-char-name').innerHTML = data.charName;
+      document.getElementById('rt-jp-name').innerHTML = data.jpName;
+      document.getElementById('rt-en-name').innerHTML = data.enName;
+      document.getElementById('rt-slogan').innerHTML = data.slogan;
+      document.getElementById('image-url').value = data.imageUrl;
+      document.getElementById('rt-image-caption').innerHTML = data.imageCaption;
+      document.getElementById('summary-editor').innerHTML = data.summary;
+      renderInfoboxRows();
+      renderChapters();
+      renderFooterCats();
+      renderRelationships();
+      renderPokemonParty();
+      updateModuleVisibility();
+      updateAll();
+      addColorButtonToAll();
+      showToast('📂 配置已导入！');
+    } catch(err) {
+      showToast('❌ 导入失败：文件格式不正确');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ==================== 侧边栏收起/展开 ====================
+function toggleSidebar() {
+  const settings = document.getElementById('settings');
+  const expandBtn = document.getElementById('expand-btn');
+  if (settings.style.display === 'none') {
+    settings.style.display = '';
+    expandBtn.style.display = 'none';
+  } else {
+    settings.style.display = 'none';
+    expandBtn.style.display = 'block';
+  }
+}
+
+// ==================== 工具函数 ====================
+// 从HTML中提取纯文本（用于判断富文本编辑器是否真的为空）
+function getPlainText(html) {
+  if (!html) return '';
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return (div.textContent || div.innerText || '').trim();
+}
+function escAttr(str) {
+  return String(str).replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ==================== 启动 ====================
+init();
+</script>
+</body>
+</html>
