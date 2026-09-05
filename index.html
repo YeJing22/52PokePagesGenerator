@@ -320,7 +320,10 @@ summary:hover{background:#eaeaea}
 <div id="code-panel">
   <div class="cp-head" onclick="toggleCodePanel()">
     <span>📋 生成的 Toyhouse 代码（点击关闭）</span>
-    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();copyCode()">📋 复制全部代码</button>
+    <div style="display:flex;gap:6px;">
+      <button class="btn btn-sm btn-success" onclick="event.stopPropagation();exportFullHtml()">💾 导出完整HTML</button>
+      <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();copyCode()">📋 复制全部代码</button>
+    </div>
   </div>
   <textarea id="code-output" readonly></textarea>
 </div>
@@ -1581,12 +1584,12 @@ function generateCode() {
   // 日文名+英文名（必须同时非空才显示，用纯文本判断）
   const showJpEn = getPlainText(d.jpName) && getPlainText(d.enName);
   const jpEnHtml = showJpEn
-    ? `<p class="text-center text-white font-italic" style="margin:5px 0 8px;font-size:15px;"><strong>${d.jpName} ${d.enName}</strong></p>`
+    ? `<p class="text-center text-white font-italic" style="margin:2px 0 4px;font-size:15px;line-height:1.2;"><strong>${d.jpName} ${d.enName}</strong></p>`
     : '';
   // 标语（非空才显示）
   const showSlogan = getPlainText(d.slogan);
   const sloganHtml = showSlogan
-    ? `<div class="card text-center font-italic text-dark mx-1" style="font-size:12px;background-color:${t.light};padding:4px 8px;">${d.slogan}</div>`
+    ? `<div class="card text-center font-italic text-dark mx-1" style="font-size:12px;background-color:${t.light};padding:3px 8px;margin-top:2px;margin-bottom:4px;">${d.slogan}</div>`
     : '';
   // 图片说明文字（非空才显示）
   const showImageCaption = getPlainText(d.imageCaption);
@@ -1746,7 +1749,7 @@ function generateCode() {
       <!-- 角色信息框 -->
       <div class="card col-12 col-md-3 m-1 m-md-3 p-0" style="float:right;background-color:${t.primary};border:2px solid ${t.dark}!important;border-radius:10px;overflow:hidden;box-shadow:none!important;z-index:5;">
         <div class="card border-0" style="background-color:${t.primary};padding-top:5px;border-radius:0;box-shadow:none!important;">
-          <p class="text-center text-white" style="font-size:22px;font-weight:bold;margin:0;">${d.charName}</p>
+          <p class="text-center text-white" style="font-size:22px;font-weight:bold;margin:0;line-height:1.1;">${d.charName}</p>
           ${jpEnHtml}
           ${sloganHtml}
           <div class="row mx-auto p-1 w-100">
@@ -1872,6 +1875,66 @@ function copyCode() {
     document.execCommand('copy');
     showToast('✅ 代码已复制！');
   });
+}
+
+// ==================== 导出完整 HTML 文件（可直接部署到 GitHub Pages 等） ====================
+function exportFullHtml() {
+  const toyhouseCode = generateCode();
+  const pageTitle = data.pageTitle ? data.pageTitle.replace(/<[^>]*>/g, '') : '角色百科页面';
+
+  const fullHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${pageTitle}</title>
+  <!-- Bootstrap 4 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      padding: 20px;
+      background: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+    .container-fluid { max-width: 1200px; margin: 0 auto; }
+    a { color: #0645ad; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+
+${toyhouseCode}
+
+  </div>
+  <!-- jQuery 和 Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"><\/script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"><\/script>
+  <script>
+    // 锚点平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  <\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([fullHtml], {type: 'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = pageTitle + '.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ 完整 HTML 文件已下载！可直接部署到 GitHub Pages');
 }
 
 // ==================== 导入导出 ====================
