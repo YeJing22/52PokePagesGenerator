@@ -273,10 +273,10 @@ summary:hover{background:#eaeaea}
     </div>
   </details>
 
-  <!-- 人际关系 -->
+  <!-- 关系 -->
   <details id="rel-section">
     <summary style="display:flex;justify-content:space-between;align-items:center;">
-      <span>👥 人际关系（Relationships）</span>
+      <span>👥 关系</span>
       <span>
         <button class="btn-move" onclick="moveModule('relationships', -1)" title="上移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
         <button class="btn-move" onclick="moveModule('relationships', 1)" title="下移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
@@ -292,7 +292,7 @@ summary:hover{background:#eaeaea}
   <!-- 宝可梦队伍 -->
   <details id="pkm-section">
     <summary style="display:flex;justify-content:space-between;align-items:center;">
-      <span>⚔️ 宝可梦队伍（Party）</span>
+      <span>⚔️ 宝可梦队伍</span>
       <span>
         <button class="btn-move" onclick="moveModule('pokemon', -1)" title="上移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
         <button class="btn-move" onclick="moveModule('pokemon', 1)" title="下移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
@@ -453,7 +453,7 @@ let data = {
   moduleOrder: ['chapters', 'relationships', 'pokemon', 'detail', 'nameOrigin', 'footerCats'],
   footerCategories: ['分类1','分类2','分类3'],
   footerCatsEnabled: true,
-  // 人际关系
+  // 关系
   relationships: [
     {name:'Character 1', desc:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
     {name:'Character 2', desc:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
@@ -465,7 +465,7 @@ let data = {
     trainerClass: 'Pokémon Trainer',
     trainerName: 'Name',
     pokemon: [
-      {image:'', name:'Pokémon', gender:'male', level:'50', type1:'', type2:'', ability:'Ability', item:'None', moves:[
+      {image:'', name:'Pokémon', gender:'male', level:'50', type1:'', type2:'', ability:'Ability', item:'None', speciesId:null, formName:'', formOptions:[], moves:[
         {name:'Move 1', type:'', category:'Physical'},
         {name:'Move 2', type:'', category:'Special'},
         {name:'Move 3', type:'', category:'Status'},
@@ -767,9 +767,37 @@ async function fetchPokemonFull(pokemonIdOrName) {
   try {
     // 基本数据
     const pkmn = await pokeFetch(POKEAPI_BASE + '/pokemon/' + pokemonIdOrName);
-    // 物种数据（中文名）
-    const species = await pokeFetch(POKEAPI_BASE + '/pokemon-species/' + pkmn.id);
+    // 物种数据（中文名）—— 用 species.url 而不是 pkmn.id，确保非默认形态也能正确获取物种
+    const species = await pokeFetch(pkmn.species.url);
     const cnName = getCnName(species.names) || pkmn.name;
+
+    // 形态列表（从物种数据的 varieties 字段提取，并并发加载中文名）
+    const forms = [];
+    if (species.varieties && species.varieties.length > 0) {
+      // 先构建基础形态列表
+      species.varieties.forEach(v => {
+        forms.push({
+          isDefault: v.is_default,
+          name: v.pokemon.name,
+          url: v.pokemon.url,
+          cnName: null
+        });
+      });
+      // 并发加载每个形态的中文名（从 pokemon-form 接口的 form_names 字段获取）
+      await Promise.all(forms.map(async (form) => {
+        try {
+          const formData = await pokeFetch(POKEAPI_BASE + '/pokemon-form/' + form.name);
+          if (formData.form_names && formData.form_names.length > 0) {
+            const cnName = formData.form_names.find(n => n.language.name === 'zh-hans');
+            if (cnName && cnName.name) {
+              form.cnName = cnName.name;
+            }
+          }
+        } catch(e) {
+          // 获取失败则保留英文名
+        }
+      }));
+    }
 
     // 图片选项
     const imageOptions = [];
@@ -828,7 +856,9 @@ async function fetchPokemonFull(pokemonIdOrName) {
       types: types,
       abilities: abilities,
       height: pkmn.height,
-      weight: pkmn.weight
+      weight: pkmn.weight,
+      forms: forms,
+      speciesId: species.id
     };
     pokemonDetailCache[cacheKey] = result;
     return result;
@@ -1051,8 +1081,8 @@ function moveInfoboxRow(i, dir) {
 
 // ==================== 模块启用/禁用 ====================
 const MODULE_MAP = {
-  relationships: {sectionId:'rel-section', label:'人际关系（Relationships）', enabledKey:'relationshipsEnabled'},
-  pokemon: {sectionId:'pkm-section', label:'宝可梦队伍（Party）', enabledKey:'pokemonEnabled'},
+  relationships: {sectionId:'rel-section', label:'关系', enabledKey:'relationshipsEnabled'},
+  pokemon: {sectionId:'pkm-section', label:'宝可梦队伍', enabledKey:'pokemonEnabled'},
   detail: {sectionId:'detail-section', label:'细节', enabledKey:'detailEnabled'},
   nameOrigin: {sectionId:'nameorigin-section', label:'名字来源', enabledKey:'nameOriginEnabled'},
   footerCats: {sectionId:'footer-section', label:'页脚分类', enabledKey:'footerCatsEnabled'}
@@ -1219,7 +1249,7 @@ function delFooterCat(i) {
   updateAll();
 }
 
-// ==================== 人际关系 ====================
+// ==================== 关系 ====================
 function renderRelationships() {
   const container = document.getElementById('relationships-list');
   container.innerHTML = '';
@@ -1307,6 +1337,14 @@ function renderPokemonParty() {
           ${pkmn.abilityOptions.map(ab => `<option value="${escAttr(ab.name)}" ${pkmn.ability===ab.name?'selected':''}>${ab.name}${ab.isHidden?'（隐藏特性）':''}</option>`).join('')}
         </select></div>`;
     }
+    // 形态选择下拉（如果该宝可梦有多个形态）
+    let formSelectHtml = '';
+    if (pkmn.formOptions && pkmn.formOptions.length > 1) {
+      formSelectHtml = `<div class="fg"><label>🔄 形态（不同形态属性/特性/图片不同）</label>
+        <select oninput="selectPokemonForm(${i}, this.value)" style="font-size:12px;">
+          ${pkmn.formOptions.map(f => `<option value="${escAttr(f.name)}" ${pkmn.formName===f.name?'selected':''}>${f.isDefault?'默认形态：':''}${f.cnName || f.name}</option>`).join('')}
+        </select></div>`;
+    }
     html += `<div class="infobox-row">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
         <span style="font-weight:bold;font-size:13px;">#${i+1} ${pkmn.name || '未命名'}</span>
@@ -1317,6 +1355,7 @@ function renderPokemonParty() {
         <input type="text" id="pkmn-search-${i}" placeholder="输入 皮卡丘 或 pikachu 搜索…" oninput="onPkmnSearchInput(${i}, this.value)" style="font-size:13px;" autocomplete="off">
         <div id="pkmn-search-results-${i}" style="position:relative;z-index:100;"></div>
       </div>
+      ${formSelectHtml}
       ${imageSelectHtml}
       <div class="fg"><label>图片 URL</label><input type="url" value="${escAttr(pkmn.image)}" oninput="data.pokemonParty.pokemon[${i}].image=this.value;updateAll()"></div>
       <div class="fg"><label>名字</label><input type="text" value="${escAttr(pkmn.name)}" oninput="data.pokemonParty.pokemon[${i}].name=this.value;updateAll()"></div>
@@ -1414,7 +1453,37 @@ async function selectPokemon(pkmnIdx, pokemonId) {
   pkmn.type2 = full.types.length > 1 ? full.types[1].name : '';
   pkmn.ability = full.abilities.length > 0 ? full.abilities[0].name : '';
   pkmn.abilityOptions = full.abilities;
+  // 保存形态相关数据
+  pkmn.speciesId = full.speciesId;
+  pkmn.formName = full.enName;
+  pkmn.formOptions = full.forms || [];
   document.getElementById('pkmn-search-' + pkmnIdx).value = full.name;
+  renderPokemonParty();
+  updateAll();
+}
+
+// 选择宝可梦形态（如洛托姆的清洗形态）
+async function selectPokemonForm(pkmnIdx, formName) {
+  if (!formName) return;
+  const pkmn = data.pokemonParty.pokemon[pkmnIdx];
+  const searchEl = document.getElementById('pkmn-search-' + pkmnIdx);
+  if (searchEl) searchEl.value = '加载中…';
+  const full = await fetchPokemonFull(formName);
+  if (!full) {
+    if (searchEl) searchEl.value = pkmn.name;
+    alert('获取形态数据失败');
+    return;
+  }
+  pkmn.name = full.name;
+  pkmn.image = full.imageOptions.length > 0 ? full.imageOptions[0].url : '';
+  pkmn.imageOptions = full.imageOptions;
+  pkmn.type1 = full.types.length > 0 ? full.types[0].name : '';
+  pkmn.type2 = full.types.length > 1 ? full.types[1].name : '';
+  pkmn.ability = full.abilities.length > 0 ? full.abilities[0].name : '';
+  pkmn.abilityOptions = full.abilities;
+  pkmn.formName = full.enName;
+  pkmn.formOptions = full.forms || [];
+  if (searchEl) searchEl.value = full.name;
   renderPokemonParty();
   updateAll();
 }
@@ -1471,7 +1540,7 @@ async function selectMove(pkmnIdx, moveIdx, moveUrl) {
 }
 function addPartyPokemon() {
   if (data.pokemonParty.pokemon.length >= 6) return;
-  data.pokemonParty.pokemon.push({image:'', name:'新宝可梦', gender:'male', level:'50', type1:'一般', type2:'', ability:'', item:'None', moves:[
+  data.pokemonParty.pokemon.push({image:'', name:'新宝可梦', gender:'male', level:'50', type1:'一般', type2:'', ability:'', item:'None', speciesId:null, formName:'', formOptions:[], moves:[
     {name:'', type:'normal', typeEn:'normal', category:'物理'},
     {name:'', type:'normal', typeEn:'normal', category:'物理'},
     {name:'', type:'normal', typeEn:'normal', category:'物理'},
@@ -1799,7 +1868,7 @@ function generateCode() {
     ? `<p class="text-center mb-0" style="margin:0;padding:6px 8px;font-size:13px;background-color:#ffffff;"><span style="color:#3366cc;">${d.imageCaption}</span></p>`
     : '';
 
-  // 人际关系
+  // 关系
   let relationshipsHtml = '';
   d.relationships.forEach((rel, i) => {
     relationshipsHtml += `
