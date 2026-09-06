@@ -277,7 +277,11 @@ summary:hover{background:#eaeaea}
   <details id="rel-section">
     <summary style="display:flex;justify-content:space-between;align-items:center;">
       <span>👥 人际关系（Relationships）</span>
-      <button class="btn-del" onclick="toggleModule('relationships')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      <span>
+        <button class="btn-move" onclick="moveModule('relationships', -1)" title="上移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
+        <button class="btn-move" onclick="moveModule('relationships', 1)" title="下移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
+        <button class="btn-del" onclick="toggleModule('relationships')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      </span>
     </summary>
     <div class="dc">
       <div id="relationships-list"></div>
@@ -289,10 +293,72 @@ summary:hover{background:#eaeaea}
   <details id="pkm-section">
     <summary style="display:flex;justify-content:space-between;align-items:center;">
       <span>⚔️ 宝可梦队伍（Party）</span>
-      <button class="btn-del" onclick="toggleModule('pokemon')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      <span>
+        <button class="btn-move" onclick="moveModule('pokemon', -1)" title="上移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
+        <button class="btn-move" onclick="moveModule('pokemon', 1)" title="下移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
+        <button class="btn-del" onclick="toggleModule('pokemon')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      </span>
     </summary>
     <div class="dc">
       <div id="pokemon-party"></div>
+    </div>
+  </details>
+
+  <!-- 细节 -->
+  <details id="detail-section">
+    <summary style="display:flex;justify-content:space-between;align-items:center;">
+      <span>📝 细节</span>
+      <span>
+        <button class="btn-move" onclick="moveModule('detail', -1)" title="上移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
+        <button class="btn-move" onclick="moveModule('detail', 1)" title="下移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
+        <button class="btn-del" onclick="toggleModule('detail')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      </span>
+    </summary>
+    <div class="dc">
+      <div class="fg">
+        <label>章节标题</label>
+        <input type="text" placeholder="章节标题" value="" id="detail-title" oninput="data.detailChapter.title=this.value;updateAll()">
+      </div>
+      <div class="rt-wrap">
+        <div class="rt-toolbar">
+          <button onclick="rtCmd('bold','detail-editor')" title="加粗"><b>B</b></button>
+          <button onclick="rtCmd('italic','detail-editor')" title="斜体"><i>I</i></button>
+          <button onclick="rtCmd('underline','detail-editor')" title="下划线"><u>U</u></button>
+          <span class="sep"></span>
+          <button onclick="rtLink('detail-editor')" title="插入超链接">🔗 链接</button>
+          <button onclick="rtCmd('removeFormat','detail-editor')" title="清除格式">✕ 清除</button>
+        </div>
+        <div class="rich-editor" id="detail-editor" contenteditable="true" data-placeholder="在此输入细节内容…" oninput="data.detailChapter.content=this.innerHTML;updateAll()"></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- 名字来源 -->
+  <details id="nameorigin-section">
+    <summary style="display:flex;justify-content:space-between;align-items:center;">
+      <span>🏷️ 名字来源</span>
+      <span>
+        <button class="btn-move" onclick="moveModule('nameOrigin', -1)" title="上移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
+        <button class="btn-move" onclick="moveModule('nameOrigin', 1)" title="下移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
+        <button class="btn-del" onclick="toggleModule('nameOrigin')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      </span>
+    </summary>
+    <div class="dc">
+      <div class="fg">
+        <label>章节标题</label>
+        <input type="text" placeholder="章节标题" value="" id="nameorigin-title" oninput="data.nameOriginChapter.title=this.value;updateAll()">
+      </div>
+      <div class="rt-wrap">
+        <div class="rt-toolbar">
+          <button onclick="rtCmd('bold','nameorigin-editor')" title="加粗"><b>B</b></button>
+          <button onclick="rtCmd('italic','nameorigin-editor')" title="斜体"><i>I</i></button>
+          <button onclick="rtCmd('underline','nameorigin-editor')" title="下划线"><u>U</u></button>
+          <span class="sep"></span>
+          <button onclick="rtLink('nameorigin-editor')" title="插入超链接">🔗 链接</button>
+          <button onclick="rtCmd('removeFormat','nameorigin-editor')" title="清除格式">✕ 清除</button>
+        </div>
+        <div class="rich-editor" id="nameorigin-editor" contenteditable="true" data-placeholder="在此输入名字来源内容…" oninput="data.nameOriginChapter.content=this.innerHTML;updateAll()"></div>
+      </div>
     </div>
   </details>
 
@@ -300,7 +366,11 @@ summary:hover{background:#eaeaea}
   <details id="footer-section">
     <summary style="display:flex;justify-content:space-between;align-items:center;">
       <span>🏷️ 页脚分类</span>
-      <button class="btn-del" onclick="toggleModule('footerCats')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      <span>
+        <button class="btn-move" onclick="moveModule('footerCats', -1)" title="上移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
+        <button class="btn-move" onclick="moveModule('footerCats', 1)" title="下移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
+        <button class="btn-del" onclick="toggleModule('footerCats')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      </span>
     </summary>
     <div class="dc">
       <div id="footer-cats"></div>
@@ -372,10 +442,15 @@ let data = {
     {title:'概要', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]},
     {title:'外貌', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br><br><b>Lorem</b>：Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.<br><br><b>Ipsum</b>：Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.', images:[]},
     {title:'性格', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.', images:[]},
-    {title:'经历', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]},
-    {title:'细节', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.', images:[]},
-    {title:'名字来源', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]}
+    {title:'经历', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]}
   ],
+  // 后置章节模块（细节、名字来源，独立模块，放在宝可梦后面）
+  detailChapter: {title:'细节', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.', images:[]},
+  detailEnabled: true,
+  nameOriginChapter: {title:'名字来源', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]},
+  nameOriginEnabled: true,
+  // 模块显示顺序
+  moduleOrder: ['chapters', 'relationships', 'pokemon', 'detail', 'nameOrigin', 'footerCats'],
   footerCategories: ['分类1','分类2','分类3'],
   footerCatsEnabled: true,
   // 人际关系
@@ -485,7 +560,7 @@ function getCnName(namesArray) {
 const TYPE_COLORS = {
   'normal': '#AAAAAA', 'fire': '#F08030', 'water': '#6890F0', 'electric': '#F8D030',
   'grass': '#78C850', 'ice': '#98D8D8', 'fighting': '#C03028', 'poison': '#A040A0',
-  'ground': '#E0C068', 'flying': '#A890F0', 'psychic': '#F85888', 'bug': '#A8B820',
+  'ground': '#E0C068', 'flying': '#7EC8F0', 'psychic': '#F85888', 'bug': '#A8B820',
   'rock': '#B8A038', 'ghost': '#705898', 'dragon': '#7038F8', 'dark': '#705848',
   'steel': '#B8B8D0', 'fairy': '#EE99AC'
 };
@@ -526,7 +601,7 @@ const TYPE_THEME = {
   '格斗':   {main:'#C03028', light:'#F0A098', dark:'#781810'},
   '毒':     {main:'#A040A0', light:'#D898D8', dark:'#601860'},
   '地面':   {main:'#E0C068', light:'#F0E0A8', dark:'#886820'},
-  '飞行':   {main:'#A890F0', light:'#D0C0F8', dark:'#5848A8'},
+  '飞行':   {main:'#7EC8F0', light:'#C0E0F8', dark:'#3E78A8'},
   '超能力': {main:'#F85888', light:'#F8A8C0', dark:'#A81848'},
   '虫':     {main:'#A8B820', light:'#D8E078', dark:'#586810'},
   '岩石':   {main:'#B8A038', light:'#E0D088', dark:'#685818'},
@@ -789,6 +864,15 @@ function init() {
       if (data.imageUrl !== undefined) document.getElementById('image-url').value = data.imageUrl;
       if (data.imageCaption !== undefined) document.getElementById('rt-image-caption').innerHTML = data.imageCaption;
       if (data.summary) document.getElementById('summary-editor').innerHTML = data.summary;
+      // 同步细节和名字来源
+      if (data.detailChapter) {
+        document.getElementById('detail-title').value = data.detailChapter.title;
+        document.getElementById('detail-editor').innerHTML = data.detailChapter.content;
+      }
+      if (data.nameOriginChapter) {
+        document.getElementById('nameorigin-title').value = data.nameOriginChapter.title;
+        document.getElementById('nameorigin-editor').innerHTML = data.nameOriginChapter.content;
+      }
       // 同步主题颜色
       if (data.theme) {
         document.getElementById('theme-primary').value = data.theme.primary;
@@ -812,12 +896,22 @@ function init() {
     }
   } catch(e) { console.warn('读取导入配置失败', e); }
 
+  // 初始化细节和名字来源编辑器（如果没有导入配置）
+  if (!hasImported) {
+    document.getElementById('detail-title').value = data.detailChapter.title;
+    document.getElementById('detail-editor').innerHTML = data.detailChapter.content;
+    document.getElementById('nameorigin-title').value = data.nameOriginChapter.title;
+    document.getElementById('nameorigin-editor').innerHTML = data.nameOriginChapter.content;
+  }
+
   renderInfoboxRows();
   renderChapters();
   renderFooterCats();
   renderRelationships();
   renderPokemonParty();
   updateModuleVisibility();
+  // 按照 moduleOrder 排列编辑区域的模块顺序
+  reorderModulesInEditor();
   // 更新信息框图片滑块的显示值（静态HTML滑块需要手动同步）
   updateInfoboxImageSliders();
   updateAll();
@@ -930,6 +1024,8 @@ function renderInfoboxRows() {
           <div class="rich-editor" id="${valueId}" contenteditable="true" data-placeholder="值…" oninput="data.infoboxRows[${i}].value=this.innerHTML;updateAll()">${row.value}</div>
         </div>
       </div>
+      <button class="btn-move" onclick="moveInfoboxRow(${i}, -1)" title="上移" style="padding:2px 8px;font-size:12px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:4px;">↑</button>
+      <button class="btn-move" onclick="moveInfoboxRow(${i}, 1)" title="下移" style="padding:2px 8px;font-size:12px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:4px;">↓</button>
       <button class="btn-del" onclick="delInfoboxRow(${i})" title="删除此行">✕ 删除此行</button>`;
     container.appendChild(div);
   });
@@ -945,11 +1041,20 @@ function delInfoboxRow(i) {
   renderInfoboxRows();
   updateAll();
 }
+function moveInfoboxRow(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= data.infoboxRows.length) return;
+  [data.infoboxRows[i], data.infoboxRows[j]] = [data.infoboxRows[j], data.infoboxRows[i]];
+  renderInfoboxRows();
+  updateAll();
+}
 
 // ==================== 模块启用/禁用 ====================
 const MODULE_MAP = {
   relationships: {sectionId:'rel-section', label:'人际关系（Relationships）', enabledKey:'relationshipsEnabled'},
   pokemon: {sectionId:'pkm-section', label:'宝可梦队伍（Party）', enabledKey:'pokemonEnabled'},
+  detail: {sectionId:'detail-section', label:'细节', enabledKey:'detailEnabled'},
+  nameOrigin: {sectionId:'nameorigin-section', label:'名字来源', enabledKey:'nameOriginEnabled'},
   footerCats: {sectionId:'footer-section', label:'页脚分类', enabledKey:'footerCatsEnabled'}
 };
 
@@ -959,6 +1064,25 @@ function toggleModule(key) {
   data[m.enabledKey] = !data[m.enabledKey];
   updateModuleVisibility();
   updateAll();
+}
+function moveModule(key, dir) {
+  const idx = data.moduleOrder.indexOf(key);
+  if (idx === -1) return;
+  const j = idx + dir;
+  if (j < 0 || j >= data.moduleOrder.length) return;
+  [data.moduleOrder[idx], data.moduleOrder[j]] = [data.moduleOrder[j], data.moduleOrder[idx]];
+  // 调整编辑区域的模块顺序
+  reorderModulesInEditor();
+  updateAll();
+}
+function reorderModulesInEditor() {
+  const container = document.getElementById('rel-section').parentElement;
+  data.moduleOrder.forEach(key => {
+    const m = MODULE_MAP[key];
+    if (!m) return;
+    const el = document.getElementById(m.sectionId);
+    if (el) container.appendChild(el);
+  });
 }
 
 function updateModuleVisibility() {
@@ -987,8 +1111,12 @@ function renderChapters() {
     div.className = 'chapter-block';
     div.innerHTML = `
       <div class="ch-head">
-        <input type="text" placeholder="章节标题" value="${escAttr(ch.title)}" oninput="data.chapters[${i}].title=this.value;updateAll()">
-        <button class="btn-del" onclick="delChapter(${i})" title="删除章节">✕</button>
+        <input type="text" placeholder="章节标题" value="${escAttr(ch.title)}" oninput="data.chapters[${i}].title=this.value;updateAll()" style="min-width:0;">
+        <span style="display:flex;flex-shrink:0;gap:2px;align-items:center;">
+          <button class="btn-move" onclick="moveChapter(${i}, -1)" title="上移" style="padding:2px 7px;font-size:12px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">↑</button>
+          <button class="btn-move" onclick="moveChapter(${i}, 1)" title="下移" style="padding:2px 7px;font-size:12px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">↓</button>
+          <button class="btn-del" onclick="delChapter(${i})" title="删除章节" style="padding:2px 8px;font-size:12px;">✕</button>
+        </span>
       </div>
       <div class="rt-wrap">
         <div class="rt-toolbar">
@@ -1056,6 +1184,13 @@ function addChapter() {
 }
 function delChapter(i) {
   data.chapters.splice(i, 1);
+  renderChapters();
+  updateAll();
+}
+function moveChapter(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= data.chapters.length) return;
+  [data.chapters[i], data.chapters[j]] = [data.chapters[j], data.chapters[i]];
   renderChapters();
   updateAll();
 }
@@ -1560,14 +1695,10 @@ function generateCode() {
             </tr>`;
   });
 
-  // 章节（细节、名字来源放在宝可梦后面）
+  // 章节（所有正文章节，细节和名字来源已分离为独立模块）
   let chaptersHtml = '';
-  let afterChaptersHtml = '';
   let tocHtml = '';
-  let afterTocHtml = '';
-  const AFTER_TITLES = ['细节', '名字来源'];
-  let normalIdx = 0;
-  let afterIdx = 0;
+  let chapterIdx = 0;
   d.chapters.forEach((ch, i) => {
     // 章节图片框（右浮动）
     let chImagesHtml = '';
@@ -1592,48 +1723,56 @@ function generateCode() {
       </div>`;
       });
     }
-    const isAfter = AFTER_TITLES.includes(ch.title);
-    if (isAfter) {
-      afterIdx++;
-      const chId = 'title-after-' + afterIdx;
-      afterChaptersHtml += `
+    chapterIdx++;
+    const chId = 'title' + chapterIdx;
+    chaptersHtml += `
       <h2 id="${chId}" style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">${ch.title}</h2>
       <div style="overflow:hidden;">
         ${chImagesHtml}
         <div style="font-size:15px;line-height:1.6;margin-top:10px;">${ch.content}</div>
       </div>`;
-    } else {
-      normalIdx++;
-      const chId = 'title' + normalIdx;
-      chaptersHtml += `
-      <h2 id="${chId}" style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">${ch.title}</h2>
-      <div style="overflow:hidden;">
-        ${chImagesHtml}
-        <div style="font-size:15px;line-height:1.6;margin-top:10px;">${ch.content}</div>
-      </div>`;
-      tocHtml += `<div style="margin:4px 0;"><a href="#${chId}" style="color:#3366cc;text-decoration:none;">${normalIdx}. ${ch.title}</a></div>`;
-    }
+    tocHtml += `<div style="margin:4px 0;"><a href="#${chId}" style="color:#3366cc;text-decoration:none;">${chapterIdx}. ${ch.title}</a></div>`;
   });
-  // 目录：人际关系和宝可梦队伍（在普通章节之后、后置章节之前）
+  // 目录：按照 moduleOrder 动态生成（chapters 的目录已在上面生成）
   const relCount = (d.relationshipsEnabled && d.relationships.length > 0) ? 1 : 0;
   const pkmCount = d.pokemonEnabled ? 1 : 0;
-  if (relCount) {
-    tocHtml += `<div style="margin:4px 0;"><a href="#title8" style="color:#3366cc;text-decoration:none;">${normalIdx+1}. 关系</a></div>`;
-  }
-  if (pkmCount) {
-    tocHtml += `<div style="margin:4px 0;"><a href="#title9" style="color:#3366cc;text-decoration:none;">${normalIdx+relCount+1}. 宝可梦</a></div>`;
-  }
-  // 后置章节的目录（细节、名字来源）
-  if (afterChaptersHtml) {
-    afterChaptersHtml = afterChaptersHtml.replace(/id="title-after-(\d+)"/g, (m, n) => `id="title${normalIdx+relCount+pkmCount+parseInt(n)}"`);
-    let afterTocIdx = normalIdx + relCount + pkmCount;
-    d.chapters.forEach((ch) => {
-      if (AFTER_TITLES.includes(ch.title)) {
-        afterTocIdx++;
-        tocHtml += `<div style="margin:4px 0;"><a href="#title${afterTocIdx}" style="color:#3366cc;text-decoration:none;">${afterTocIdx}. ${ch.title}</a></div>`;
-      }
-    });
-  }
+  const detailCount = d.detailEnabled ? 1 : 0;
+  const nameOriginCount = d.nameOriginEnabled ? 1 : 0;
+  const tocItemMap = {
+    relationships: relCount ? '关系|#title-rel' : '',
+    pokemon: pkmCount ? '宝可梦|#title-pkm' : '',
+    detail: detailCount ? d.detailChapter.title + '|#title-detail' : '',
+    nameOrigin: nameOriginCount ? d.nameOriginChapter.title + '|#title-nameorigin' : '',
+    footerCats: ''
+  };
+  let tocIdx = chapterIdx;
+  d.moduleOrder.forEach(key => {
+    if (key === 'chapters' || key === 'footerCats') return;
+    const item = tocItemMap[key];
+    if (item) {
+      tocIdx++;
+      const [label, href] = item.split('|');
+      tocHtml += `<div style="margin:4px 0;"><a href="${href}" style="color:#3366cc;text-decoration:none;">${tocIdx}. ${label}</a></div>`;
+    }
+  });
+
+  // 细节模块
+  const detailSectionHtml = d.detailEnabled ? `
+  <div id="title-detail" class="my-3">
+    <h2 style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">${d.detailChapter.title}</h2>
+    <div style="overflow:hidden;">
+      <div style="font-size:15px;line-height:1.6;margin-top:10px;">${d.detailChapter.content}</div>
+    </div>
+  </div>` : '';
+
+  // 名字来源模块
+  const nameOriginSectionHtml = d.nameOriginEnabled ? `
+  <div id="title-nameorigin" class="my-3">
+    <h2 style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">${d.nameOriginChapter.title}</h2>
+    <div style="overflow:hidden;">
+      <div style="font-size:15px;line-height:1.6;margin-top:10px;">${d.nameOriginChapter.content}</div>
+    </div>
+  </div>` : '';
 
   // 页脚分类
   const catsHtml = (d.footerCatsEnabled && d.footerCategories.length > 0) ? d.footerCategories.map(c =>
@@ -1647,7 +1786,7 @@ function generateCode() {
   // 日文名+英文名（必须同时非空才显示，用纯文本判断）
   const showJpEn = getPlainText(d.jpName) && getPlainText(d.enName);
   const jpEnHtml = showJpEn
-    ? `<p class="text-center text-white font-italic" style="margin:2px 0 4px;font-size:15px;line-height:1.2;"><strong>${d.jpName} ${d.enName}</strong></p>`
+    ? `<p class="text-center text-white font-italic" style="margin:5px 0 4px;font-size:15px;line-height:1.2;"><strong>${d.jpName} ${d.enName}</strong></p>`
     : '';
   // 标语（非空才显示）
   const showSlogan = getPlainText(d.slogan);
@@ -1670,7 +1809,7 @@ function generateCode() {
     </div>`;
   });
   const relationshipsSectionHtml = (d.relationshipsEnabled && d.relationships.length > 0) ? `
-  <div id="title8" class="my-3">
+  <div id="title-rel" class="my-3">
     <h2 style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">关系</h2>
     ${relationshipsHtml}
   </div>` : '';
@@ -1765,9 +1904,9 @@ function generateCode() {
     </div>`;
   });
   const pokemonSectionHtml = d.pokemonEnabled ? `
-  <div id="title9" class="my-3">
+  <div id="title-pkm" class="my-3">
     <h2 style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">宝可梦</h2>
-    <div id="subtitle9-1" class="my-2">
+    <div id="subtitle-pkm-1" class="my-2">
       <h4 class="font-weight-bold" style="font-size:17px;margin-top:16px;">队伍</h4>
       <div class="card py-1 text-dark" style="max-width:730px;background-color:${d.pokemonTheme.bg}">
         <div class="row no-gutters mx-auto">
@@ -1796,6 +1935,22 @@ function generateCode() {
     </div>
   </div>` : '';
 
+  // 按照 moduleOrder 动态组装模块输出顺序
+  const moduleHtmlMap = {
+    chapters: chaptersHtml,
+    relationships: relationshipsSectionHtml,
+    pokemon: pokemonSectionHtml,
+    detail: detailSectionHtml,
+    nameOrigin: nameOriginSectionHtml,
+    footerCats: footerSectionHtml
+  };
+  let modulesOutput = '';
+  d.moduleOrder.forEach(key => {
+    if (moduleHtmlMap[key]) {
+      modulesOutput += '\n      ' + moduleHtmlMap[key].trim();
+    }
+  });
+
   return `<!-- ========== 神奇宝贝百科风格代码生成器模板 ========== -->
 <!-- 生成器：神奇宝贝百科风格代码生成器 -->
 <div class="container-fluid" style="padding-left:1px;padding-right:1px;">
@@ -1816,8 +1971,8 @@ function generateCode() {
           ${jpEnHtml}
           ${sloganHtml}
           <div class="row mx-auto p-1 w-100">
-            <div class="card w-100 bg-white border-0 p-0" style="border-radius:0;box-shadow:none!important;">
-              <div style="height:${d.infoboxCardSize.height}px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+            <div class="card w-100 bg-white border-0 p-0" style="border-radius:10px;box-shadow:none!important;overflow:hidden;">
+              <div style="height:${d.infoboxCardSize.height}px;display:flex;align-items:center;justify-content:center;background-color:#ffffff;">
                 <img class="mx-auto" style="width:${Math.round(200 * d.infoboxImageOffset.scale / 100)}px;max-width:100%;height:auto;transform:translate(${d.infoboxImageOffset.x}px, ${d.infoboxImageOffset.y}px);display:block;" src="${d.imageUrl}" alt="${d.charName}">
               </div>
               ${imageCaptionHtml}
@@ -1838,11 +1993,8 @@ function generateCode() {
           ${tocHtml}
         </div>
       </div>
-      <!-- 正文章节 -->${chaptersHtml}
-      <!-- 人际关系 -->${relationshipsSectionHtml}
-      <!-- 宝可梦队伍 -->${pokemonSectionHtml}
-      <!-- 后置章节（细节、名字来源） -->${afterChaptersHtml}
-      <!-- 页脚分类 -->${footerSectionHtml}
+      <!-- 按照 moduleOrder 动态排序的模块 -->
+      ${modulesOutput}
     </div>
   </div>
 </div>`;
