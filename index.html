@@ -222,6 +222,16 @@ summary:hover{background:#eaeaea}
           <div class="rich-editor" id="rt-image-caption" contenteditable="true" data-placeholder="图片说明文字" oninput="updateData()">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
         </div>
       </div>
+      <div class="infobox-row" style="background:#f8f9fa;padding:8px;border-radius:6px;margin-bottom:8px;">
+        <div style="font-weight:bold;font-size:12px;margin-bottom:6px;">🖼️ 信息框图片位置微调（用于对齐边框）</div>
+        <div class="infobox-row" style="margin:0;">
+          <div class="fg"><label id="infobox-card-height-label">卡片高度 (420px)</label><input type="range" id="infobox-card-height" min="200" max="600" value="420" oninput="data.infoboxCardSize.height=parseInt(this.value);document.getElementById('infobox-card-height-label').textContent='卡片高度 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+          <div class="fg"><label id="infobox-image-x-label">水平偏移 (0px)</label><input type="range" id="infobox-image-x" min="-100" max="100" value="0" oninput="data.infoboxImageOffset.x=parseInt(this.value);document.getElementById('infobox-image-x-label').textContent='水平偏移 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+          <div class="fg"><label id="infobox-image-y-label">垂直偏移 (0px)</label><input type="range" id="infobox-image-y" min="-100" max="100" value="0" oninput="data.infoboxImageOffset.y=parseInt(this.value);document.getElementById('infobox-image-y-label').textContent='垂直偏移 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+          <div class="fg"><label id="infobox-image-scale-label">缩放 (100%)</label><input type="range" id="infobox-image-scale" min="50" max="200" value="100" oninput="data.infoboxImageOffset.scale=parseInt(this.value);document.getElementById('infobox-image-scale-label').textContent='缩放 ('+this.value+'%)';updateAll()" style="width:100%"></div>
+        </div>
+        <button onclick="resetInfoboxImage()" style="font-size:11px;padding:3px 10px;margin-top:4px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">重置位置和尺寸</button>
+      </div>
     </div>
   </details>
 
@@ -347,6 +357,8 @@ let data = {
   slogan: '"Lorem ipsum dolor sit amet"',
   imageUrl: '',
   imageCaption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  infoboxCardSize: { height:420 },
+  infoboxImageOffset: { x:0, y:0, scale:100 },
   summary: '',
   infoboxRows: [
     {label:'性别', value:'Lorem'},
@@ -757,12 +769,57 @@ function init() {
   document.getElementById('summary-editor').innerHTML = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.<br><br>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
   data.summary = document.getElementById('summary-editor').innerHTML;
   data.disambiguation = document.getElementById('rt-disambiguation').innerHTML;
+
+  // 检查是否有导入的配置（从 sessionStorage 读取，导入配置后刷新页面时使用）
+  let hasImported = false;
+  try {
+    const importedConfig = sessionStorage.getItem('importedWikiConfig');
+    if (importedConfig) {
+      const parsed = JSON.parse(importedConfig);
+      data = Object.assign(data, parsed);
+      sessionStorage.removeItem('importedWikiConfig');
+      hasImported = true;
+      // 把导入的内容同步到所有编辑器
+      if (data.pageTitle) document.getElementById('rt-page-title').innerHTML = data.pageTitle;
+      if (data.disambiguation !== undefined) document.getElementById('rt-disambiguation').innerHTML = data.disambiguation;
+      if (data.charName) document.getElementById('rt-char-name').innerHTML = data.charName;
+      if (data.jpName !== undefined) document.getElementById('rt-jp-name').innerHTML = data.jpName;
+      if (data.enName !== undefined) document.getElementById('rt-en-name').innerHTML = data.enName;
+      if (data.slogan !== undefined) document.getElementById('rt-slogan').innerHTML = data.slogan;
+      if (data.imageUrl !== undefined) document.getElementById('image-url').value = data.imageUrl;
+      if (data.imageCaption !== undefined) document.getElementById('rt-image-caption').innerHTML = data.imageCaption;
+      if (data.summary) document.getElementById('summary-editor').innerHTML = data.summary;
+      // 同步主题颜色
+      if (data.theme) {
+        document.getElementById('theme-primary').value = data.theme.primary;
+        document.getElementById('theme-dark').value = data.theme.dark;
+        document.getElementById('theme-light').value = data.theme.light;
+        document.getElementById('theme-divider').value = data.theme.divider;
+        document.getElementById('theme-primary-picker').value = data.theme.primary;
+        document.getElementById('theme-dark-picker').value = data.theme.dark;
+        document.getElementById('theme-light-picker').value = data.theme.light;
+        document.getElementById('theme-divider-picker').value = data.theme.divider;
+      }
+      // 同步宝可梦队伍颜色
+      if (data.pokemonTheme) {
+        document.getElementById('pkmn-theme-bg').value = data.pokemonTheme.bg;
+        document.getElementById('pkmn-theme-light').value = data.pokemonTheme.light;
+        document.getElementById('pkmn-theme-border').value = data.pokemonTheme.border;
+        document.getElementById('pkmn-theme-bg-picker').value = data.pokemonTheme.bg;
+        document.getElementById('pkmn-theme-light-picker').value = data.pokemonTheme.light;
+        document.getElementById('pkmn-theme-border-picker').value = data.pokemonTheme.border;
+      }
+    }
+  } catch(e) { console.warn('读取导入配置失败', e); }
+
   renderInfoboxRows();
   renderChapters();
   renderFooterCats();
   renderRelationships();
   renderPokemonParty();
   updateModuleVisibility();
+  // 更新信息框图片滑块的显示值（静态HTML滑块需要手动同步）
+  updateInfoboxImageSliders();
   updateAll();
   addColorButtonToAll();
   // 预加载宝可梦数据库（后台异步，不阻塞界面）
@@ -1600,7 +1657,7 @@ function generateCode() {
   // 图片说明文字（非空才显示）
   const showImageCaption = getPlainText(d.imageCaption);
   const imageCaptionHtml = showImageCaption
-    ? `<p class="text-center mb-0" style="margin:6px 0;font-size:13px;"><span style="color:#3366cc;">${d.imageCaption}</span></p>`
+    ? `<p class="text-center mb-0" style="margin:0;padding:6px 8px;font-size:13px;background-color:#ffffff;"><span style="color:#3366cc;">${d.imageCaption}</span></p>`
     : '';
 
   // 人际关系
@@ -1760,7 +1817,9 @@ function generateCode() {
           ${sloganHtml}
           <div class="row mx-auto p-1 w-100">
             <div class="card w-100 bg-white border-0 p-0" style="border-radius:0;box-shadow:none!important;">
-              <img class="mx-auto fr-fic fr-dib w-100" style="max-height:420px;object-fit:contain;" src="${d.imageUrl}" alt="${d.charName}">
+              <div style="height:${d.infoboxCardSize.height}px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                <img class="mx-auto" style="width:${Math.round(200 * d.infoboxImageOffset.scale / 100)}px;max-width:100%;height:auto;position:relative;left:50%;transform:translate(calc(-50% + ${d.infoboxImageOffset.x}px), ${d.infoboxImageOffset.y}px);display:block;" src="${d.imageUrl}" alt="${d.charName}">
+              </div>
               ${imageCaptionHtml}
             </div>
           </div>
@@ -1803,7 +1862,7 @@ function updatePreview(code) {
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <style>body{margin:0;padding:0;font-family:-apple-system,'Microsoft YaHei',sans-serif;background:#fff;min-height:100vh;}</style>
+    <style>body{margin:0;padding:0;font-family:-apple-system,'Microsoft YaHei',sans-serif;background:#fff;min-height:100vh;} .card.col-12.col-md-3{max-width:280px !important;}</style>
     </head><body>${previewCode}
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"><\/script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"><\/script>
@@ -1945,6 +2004,29 @@ ${toyhouseCode}
   showToast('✅ 完整 HTML 文件已下载！可直接部署到 GitHub Pages');
 }
 
+// ==================== 更新信息框图片滑块显示值（静态HTML滑块需要手动同步） ====================
+function updateInfoboxImageSliders() {
+  try {
+    const h = document.getElementById('infobox-card-height');
+    const x = document.getElementById('infobox-image-x');
+    const y = document.getElementById('infobox-image-y');
+    const s = document.getElementById('infobox-image-scale');
+    if (h) { h.value = data.infoboxCardSize.height; document.getElementById('infobox-card-height-label').textContent = '卡片高度 (' + data.infoboxCardSize.height + 'px)'; }
+    if (x) { x.value = data.infoboxImageOffset.x; document.getElementById('infobox-image-x-label').textContent = '水平偏移 (' + data.infoboxImageOffset.x + 'px)'; }
+    if (y) { y.value = data.infoboxImageOffset.y; document.getElementById('infobox-image-y-label').textContent = '垂直偏移 (' + data.infoboxImageOffset.y + 'px)'; }
+    if (s) { s.value = data.infoboxImageOffset.scale; document.getElementById('infobox-image-scale-label').textContent = '缩放 (' + data.infoboxImageOffset.scale + '%)'; }
+  } catch(e) { console.warn('更新信息框滑块失败', e); }
+}
+
+// ==================== 重置信息框图片位置和尺寸 ====================
+function resetInfoboxImage() {
+  data.infoboxCardSize = {height:420};
+  data.infoboxImageOffset = {x:0,y:0,scale:100};
+  sessionStorage.setItem('importedWikiConfig', JSON.stringify(data));
+  showToast('🔄 已重置，正在刷新...');
+  setTimeout(() => location.reload(), 500);
+}
+
 // ==================== 导入导出 ====================
 function exportConfig() {
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -1966,43 +2048,10 @@ function handleImport(e) {
   reader.onload = function(ev) {
     try {
       const imported = JSON.parse(ev.target.result);
-      data = Object.assign(data, imported);
-      // 同步到表单
-      document.getElementById('theme-primary').value = data.theme.primary;
-      document.getElementById('theme-dark').value = data.theme.dark;
-      document.getElementById('theme-light').value = data.theme.light;
-      document.getElementById('theme-divider').value = data.theme.divider;
-      document.getElementById('theme-primary-picker').value = data.theme.primary;
-      document.getElementById('theme-dark-picker').value = data.theme.dark;
-      document.getElementById('theme-light-picker').value = data.theme.light;
-      document.getElementById('theme-divider-picker').value = data.theme.divider;
-      // 同步宝可梦队伍颜色选择器
-      if (data.pokemonTheme) {
-        document.getElementById('pkmn-theme-bg').value = data.pokemonTheme.bg;
-        document.getElementById('pkmn-theme-light').value = data.pokemonTheme.light;
-        document.getElementById('pkmn-theme-border').value = data.pokemonTheme.border;
-        document.getElementById('pkmn-theme-bg-picker').value = data.pokemonTheme.bg;
-        document.getElementById('pkmn-theme-light-picker').value = data.pokemonTheme.light;
-        document.getElementById('pkmn-theme-border-picker').value = data.pokemonTheme.border;
-      }
-      document.getElementById('rt-page-title').innerHTML = data.pageTitle;
-      document.getElementById('rt-disambiguation').innerHTML = data.disambiguation;
-      document.getElementById('rt-char-name').innerHTML = data.charName;
-      document.getElementById('rt-jp-name').innerHTML = data.jpName;
-      document.getElementById('rt-en-name').innerHTML = data.enName;
-      document.getElementById('rt-slogan').innerHTML = data.slogan;
-      document.getElementById('image-url').value = data.imageUrl;
-      document.getElementById('rt-image-caption').innerHTML = data.imageCaption;
-      document.getElementById('summary-editor').innerHTML = data.summary;
-      renderInfoboxRows();
-      renderChapters();
-      renderFooterCats();
-      renderRelationships();
-      renderPokemonParty();
-      updateModuleVisibility();
-      updateAll();
-      addColorButtonToAll();
-      showToast('📂 配置已导入！');
+      // 保存到 sessionStorage，刷新页面后 init() 会读取并应用
+      sessionStorage.setItem('importedWikiConfig', JSON.stringify(imported));
+      showToast('📂 配置已导入，正在刷新...');
+      setTimeout(() => location.reload(), 500);
     } catch(err) {
       showToast('❌ 导入失败：文件格式不正确');
     }
