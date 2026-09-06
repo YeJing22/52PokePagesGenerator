@@ -338,6 +338,7 @@ let data = {
   theme: { primary:'#306030', dark:'#205020', light:'#ACBFAC', divider:'#4a854a' },
   pokemonTheme: { bg:'#8334B7', light:'#AE7BD0', border:'#552277' },
   trainerImageOffset: { x:0, y:0, scale:100 },
+  trainerCardSize: { width:100, height:120 },
   pageTitle: '角色名（作品名）',
   disambiguation: '',
   charName: '角色名',
@@ -1085,9 +1086,14 @@ function renderPokemonParty() {
       <div class="infobox-row" style="margin:0;">
         <div class="fg"><label>水平偏移 (${data.trainerImageOffset.x}px)</label><input type="range" min="-50" max="50" value="${data.trainerImageOffset.x}" oninput="data.trainerImageOffset.x=parseInt(this.value);this.previousElementSibling.textContent='水平偏移 ('+this.value+'px)';updateAll()" style="width:100%"></div>
         <div class="fg"><label>垂直偏移 (${data.trainerImageOffset.y}px)</label><input type="range" min="-50" max="50" value="${data.trainerImageOffset.y}" oninput="data.trainerImageOffset.y=parseInt(this.value);this.previousElementSibling.textContent='垂直偏移 ('+this.value+'px)';updateAll()" style="width:100%"></div>
-        <div class="fg"><label>缩放 (${data.trainerImageOffset.scale}%)</label><input type="range" min="50" max="150" value="${data.trainerImageOffset.scale}" oninput="data.trainerImageOffset.scale=parseInt(this.value);this.previousElementSibling.textContent='缩放 ('+this.value+'%)';updateAll()" style="width:100%"></div>
+        <div class="fg"><label>缩放 (${data.trainerImageOffset.scale}%)</label><input type="range" min="50" max="200" value="${data.trainerImageOffset.scale}" oninput="data.trainerImageOffset.scale=parseInt(this.value);this.previousElementSibling.textContent='缩放 ('+this.value+'%)';updateAll()" style="width:100%"></div>
       </div>
-      <button onclick="data.trainerImageOffset={x:0,y:0,scale:100};renderPokemonParty();updateAll()" style="font-size:11px;padding:3px 10px;margin-top:4px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">重置位置</button>
+      <div style="font-weight:bold;font-size:12px;margin:8px 0 6px;">📐 图片卡片尺寸（解决图片撑不满的问题）</div>
+      <div class="infobox-row" style="margin:0;">
+        <div class="fg"><label>卡片宽度 (${data.trainerCardSize.width}px)</label><input type="range" min="80" max="200" value="${data.trainerCardSize.width}" oninput="data.trainerCardSize.width=parseInt(this.value);this.previousElementSibling.textContent='卡片宽度 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+        <div class="fg"><label>卡片高度 (${data.trainerCardSize.height}px)</label><input type="range" min="80" max="250" value="${data.trainerCardSize.height}" oninput="data.trainerCardSize.height=parseInt(this.value);this.previousElementSibling.textContent='卡片高度 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+      </div>
+      <button onclick="data.trainerImageOffset={x:0,y:0,scale:100};data.trainerCardSize={width:100,height:120};renderPokemonParty();updateAll()" style="font-size:11px;padding:3px 10px;margin-top:4px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">重置位置和尺寸</button>
     </div>
     <div style="font-weight:bold;margin:10px 0 5px;">队伍宝可梦（最多6只）</div>`;
   p.pokemon.forEach((pkmn, i) => {
@@ -1619,10 +1625,10 @@ function generateCode() {
   for (let i = 0; i < 6; i++) {
     if (i < party.pokemon.length) {
       // 有宝可梦：正常红色精灵球
-      pokeballs += '<img src="https://f2.toyhou.se/file/f2-toyhou-se/images/76431707_4K812PTT4nonDeN.png" style="width:16px;height:16px">';
+      pokeballs += '<img src="https://f2.toyhou.se/file/f2-toyhou-se/images/76431707_4K812PTT4nonDeN.png" style="width:16px;height:16px;display:inline-block;margin-right:2px;vertical-align:middle;">';
     } else {
       // 空位：灰色半透明精灵球（用CSS滤镜变灰）
-      pokeballs += '<img src="https://f2.toyhou.se/file/f2-toyhou-se/images/76431707_4K812PTT4nonDeN.png" style="width:16px;height:16px;filter:grayscale(100%);opacity:0.35">';
+      pokeballs += '<img src="https://f2.toyhou.se/file/f2-toyhou-se/images/76431707_4K812PTT4nonDeN.png" style="width:16px;height:16px;display:inline-block;margin-right:2px;vertical-align:middle;filter:grayscale(100%);opacity:0.35;">';
     }
   }
   let partyPokemonHtml = '';
@@ -1708,18 +1714,18 @@ function generateCode() {
       <h4 class="font-weight-bold" style="font-size:17px;margin-top:16px;">队伍</h4>
       <div class="card py-1 text-dark" style="max-width:730px;background-color:${d.pokemonTheme.bg}">
         <div class="row no-gutters mx-auto">
-          <div class="col ml-1" style="display:flex;align-items:center;">
-            <div class="card p-1" style="width:100px;background-color:${d.pokemonTheme.light};border-radius:30px;border:2px solid ${d.pokemonTheme.border};overflow:hidden;display:flex;align-items:center;justify-content:center;">
-              <img src="${escAttr(party.trainerImage)}" class="mx-auto" style="width:100px;transform:translate(${d.trainerImageOffset.x}px, ${d.trainerImageOffset.y}px) scale(${d.trainerImageOffset.scale/100});display:block;">
+          <div class="col ml-1" style="display:flex;align-items:center;flex-shrink:0;">
+            <div class="card p-1" style="width:${d.trainerCardSize.width}px;height:${d.trainerCardSize.height}px;background-color:${d.pokemonTheme.light};border-radius:30px;border:2px solid ${d.pokemonTheme.border};overflow:hidden;display:flex;align-items:center;justify-content:center;">
+              <img src="${escAttr(party.trainerImage)}" class="mx-auto" style="width:${Math.round(d.trainerCardSize.width * d.trainerImageOffset.scale / 100)}px;max-width:none;height:auto;border-radius:28px;position:relative;left:50%;transform:translate(calc(-50% + ${d.trainerImageOffset.x}px), ${d.trainerImageOffset.y}px);display:block;">
             </div>
           </div>
-          <div class="col mx-1" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
-            <div class="card border-0 text-center font-weight-bold" style="display:inline-block;width:auto;background-color:${d.pokemonTheme.light};border-radius:30px;padding:10px 20px;margin-bottom:10px;white-space:nowrap;">
+          <div class="col mx-1" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;flex-grow:1;">
+            <div class="card border-0 text-center font-weight-bold" style="display:inline-flex;width:auto;flex:0 0 auto;max-width:100%;align-self:center;background-color:${d.pokemonTheme.light};border-radius:30px;padding:10px 20px;margin:0 0 10px 0;white-space:nowrap;">
               <p style="font-size:13px;margin:0 0 4px 0;line-height:1.3;white-space:nowrap;">${party.trainerClass}</p>
               <p style="font-size:20px;margin:0;line-height:1.3;white-space:nowrap;">${party.trainerName}</p>
             </div>
-            <div class="card py-1 px-2" style="background-color:${d.pokemonTheme.light};border-radius:30px;white-space:nowrap;display:inline-block;width:auto;">
-              <div style="display:inline-flex;gap:2px;align-items:center;">${pokeballs}</div>
+            <div class="card py-1 px-2" style="background-color:${d.pokemonTheme.light};border-radius:30px;white-space:nowrap;display:inline-flex;width:124px;flex:0 0 auto;max-width:none;align-items:center;justify-content:center;align-self:center;margin:0;">
+              <span style="white-space:nowrap;display:inline-flex;align-items:center;">${pokeballs}</span>
             </div>
           </div>
           <div class="col mr-1 text-center pt-1 pt-md-4">
@@ -1879,7 +1885,10 @@ function copyCode() {
 
 // ==================== 导出完整 HTML 文件（可直接部署到 GitHub Pages 等） ====================
 function exportFullHtml() {
-  const toyhouseCode = generateCode();
+  let toyhouseCode = generateCode();
+  // 导出完整HTML时，把 container 替换为 container-fluid，让内容占满宽度
+  toyhouseCode = toyhouseCode.replace(/class="container /g, 'class="container-fluid ');
+  toyhouseCode = toyhouseCode.replace(/class="container"/g, 'class="container-fluid"');
   const pageTitle = data.pageTitle ? data.pageTitle.replace(/<[^>]*>/g, '') : '角色百科页面';
 
   const fullHtml = `<!DOCTYPE html>
@@ -1892,21 +1901,20 @@ function exportFullHtml() {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <style>
     body {
-      padding: 20px;
+      padding: 15px;
       background: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      margin: 0;
     }
-    .container-fluid { max-width: 1200px; margin: 0 auto; }
+    .container-fluid { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
     a { color: #0645ad; text-decoration: none; }
     a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div class="container-fluid">
 
 ${toyhouseCode}
 
-  </div>
   <!-- jQuery 和 Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"><\/script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"><\/script>
