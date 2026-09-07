@@ -2818,7 +2818,7 @@ function generateCode() {
   // 图片说明文字（非空才显示）
   const showImageCaption = getPlainText(d.imageCaption);
   const imageCaptionHtml = showImageCaption
-    ? `<p class="text-center mb-0" style="margin:0;padding:6px 8px;font-size:13px;background-color:#ffffff;"><span style="color:#3366cc;">${d.imageCaption}</span></p>`
+    ? `<p class="text-center mb-0" style="margin:0;padding:6px 8px;font-size:13px;background-color:#ffffff;border-radius:0 0 10px 10px;"><span style="color:#3366cc;">${d.imageCaption}</span></p>`
     : '';
 
   // 关系
@@ -3001,8 +3001,8 @@ function generateCode() {
           ${jpEnHtml}
           ${sloganHtml}
           <div class="row mx-auto p-1 w-100">
-            <div class="card w-100 bg-white border-0 p-0" style="border-radius:10px;box-shadow:none!important;overflow:hidden;">
-              <div style="height:${d.infoboxCardSize.height}px;display:flex;align-items:center;justify-content:center;background-color:#ffffff;">
+            <div class="card w-100 bg-white border-0 p-0 infobox-image-card" style="border-radius:10px!important;background-color:#ffffff!important;box-shadow:none!important;overflow:hidden!important;">
+              <div style="height:${d.infoboxCardSize.height}px;display:flex;align-items:center;justify-content:center;background-color:#ffffff;border-radius:10px 10px 0 0;overflow:hidden;">
                 <img class="mx-auto" style="width:${Math.round(200 * d.infoboxImageOffset.scale / 100)}px;max-width:100%;height:auto;transform:translate(${d.infoboxImageOffset.x}px, ${d.infoboxImageOffset.y}px);display:block;" src="${d.imageUrl}" alt="${d.charName}">
               </div>
               ${imageCaptionHtml}
@@ -3054,6 +3054,18 @@ function updatePreview(code) {
       border: none !important;
       box-shadow: none !important;
       border-radius: 0 !important;
+    }
+    /* 信息框图片容器：保留圆角和白色背景 */
+    .card.infobox-image-card {
+      background: #ffffff !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+    }
+    /* 信息框图片容器：保留圆角和白色背景 */
+    .card.infobox-image-card {
+      background: #ffffff !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
     }
                         /* 注释文字：虚线下划线 */
     .explain {
@@ -3410,6 +3422,18 @@ function exportFullHtml() {
       border: none !important;
       box-shadow: none !important;
       border-radius: 0 !important;
+    }
+    /* 信息框图片容器：保留圆角和白色背景 */
+    .card.infobox-image-card {
+      background: #ffffff !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+    }
+    /* 信息框图片容器：保留圆角和白色背景 */
+    .card.infobox-image-card {
+      background: #ffffff !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
     }
     .card.col-12.col-md-3 { max-width: 280px !important; }
     .card.col-12.col-md-3 { max-width: 280px !important; }
