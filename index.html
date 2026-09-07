@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -18,7 +18,9 @@ header h1{font-size:17px;font-weight:bold}
 .btn-danger:hover{background:#c62828}
 .btn-sm{padding:3px 10px;font-size:12px}
 main{display:flex;height:calc(100vh - 49px)}
-#settings{width:320px;min-width:280px;overflow-y:auto;padding:12px;border-right:1px solid #ccc;background:#f7f7f7;flex-shrink:0}
+#settings{width:320px;min-width:280px;overflow-y:auto;padding:12px;border-right:1px solid #ccc;background:#f7f7f7;flex-shrink:0;transition:width .2s ease}
+.width-btn{min-width:24px!important;padding:3px 6px!important;font-size:11px!important}
+.width-btn.active{background:#306030!important;color:#fff!important;border-color:#306030!important}
 .settings-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #ddd;position:sticky;top:0;background:#f7f7f7;z-index:10}
 .settings-toolbar span{font-weight:bold;font-size:13px}
 #expand-btn{display:none;position:fixed;top:60px;left:10px;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,.2)}
@@ -42,12 +44,25 @@ summary:hover{background:#eaeaea}
 .color-row .fg{margin-bottom:0;flex:1;min-width:120px}
 .color-row input[type=color]{width:36px;height:30px;border:1px solid #ccc;border-radius:4px;cursor:pointer;padding:1px}
 .rt-wrap{border:1px solid #ccc;border-radius:4px;overflow:hidden;background:#fff}
+.source-textarea{width:100%;min-height:120px;padding:8px;border:none;border-top:1px solid #ddd;font-family:Consolas,Monaco,monospace;font-size:12px;line-height:1.5;background:#1e1e1e;color:#d4d4d4;resize:vertical;outline:none;white-space:pre;tab-size:2}
+.source-toggle-btn.active{background:#306030!important;color:#fff!important;border-color:#306030!important}
 .rt-toolbar{display:flex;gap:2px;padding:4px 6px;background:#f5f5f5;border-bottom:1px solid #ddd;flex-wrap:wrap}
 .rt-toolbar button{padding:3px 9px;border:1px solid #ccc;border-radius:3px;background:#fff;cursor:pointer;font-size:12px;min-width:28px}
 .rt-toolbar button:hover{background:#e8e8e8}
 .rt-toolbar button:active{background:#ddd}
+/* 编辑器里的注释文字样式 */
+.rich-editor .explain{position:relative;border-bottom:1px dotted #3366cc;cursor:help;color:inherit;}
+.rich-editor .explain::after{content:attr(data-annotation);position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;background:#fff;border:1px solid #A2A9B1;border-radius:4px;padding:6px 12px;font-size:13px;color:#202122;line-height:1.4;white-space:normal;min-width:40px;max-width:350px;width:max-content;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:9999;pointer-events:none;font-weight:normal;}
+.rich-editor .explain::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;width:13px;height:7px;background-image:url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M6.5%200.5%20L12.5%207%20L0.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M6.5%200.5%20L12.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M6.5%200.5%20L0.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center bottom;opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:10000;pointer-events:none;}
+.rich-editor .explain:hover::after,.rich-editor .explain:hover::before{opacity:1;visibility:visible;}
+.rich-editor .explain-top::after{top:auto;bottom:calc(100% + 8px);}
+.rich-editor .explain-top::before{top:auto;bottom:calc(100% + 2px);background-image:url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200.5%20L12.5%200.5%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");background-position:center top;}
 .rt-toolbar .sep{width:1px;background:#ccc;margin:2px 4px}
-.rich-editor{min-height:65px;padding:8px 10px;font-size:13px;line-height:1.7;outline:none;background:#fff}
+.rich-editor{min-height:65px;padding:8px 10px;font-size:13px;line-height:1.7;outline:none;background:#fff;overflow-x:auto;overflow-y:auto;max-width:100%}
+.rich-editor::-webkit-scrollbar{height:8px;width:8px}
+.rich-editor::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px}
+.rich-editor::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:4px}
+.rich-editor::-webkit-scrollbar-thumb:hover{background:#a1a1a1}
 .rich-editor:empty::before{content:attr(data-placeholder);color:#aaa}
 .rt-compact .rich-editor{min-height:30px;padding:5px 8px;font-size:13px;line-height:1.5}
 .rt-compact .rt-toolbar{padding:2px 4px}
@@ -106,8 +121,29 @@ summary:hover{background:#eaeaea}
 <div id="settings">
   <div class="settings-toolbar">
     <span>⚙️ 设置面板</span>
-    <button class="btn btn-sm" onclick="toggleSidebar()" title="收起面板，全屏预览">« 收起</button>
+    <div style="display:flex;gap:4px;align-items:center;">
+      <button class="btn btn-sm width-btn" data-width="narrow" onclick="setSidebarWidth('narrow')" title="窄面板">窄</button>
+      <button class="btn btn-sm width-btn" data-width="medium" onclick="setSidebarWidth('medium')" title="中面板">中</button>
+      <button class="btn btn-sm width-btn" data-width="wide" onclick="setSidebarWidth('wide')" title="宽面板">宽</button>
+      <button class="btn btn-sm" onclick="toggleSidebar()" title="收起面板，全屏预览">« 收起</button>
+    </div>
   </div>
+
+  <!-- 缓存管理 -->
+  <details open>
+    <summary>💾 缓存管理</summary>
+    <div class="dc">
+      <div id="cache-status" style="font-size:12px;color:#666;margin-bottom:10px;">💾 暂无保存记录</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-primary" onclick="saveToLocalStorage();updateCacheStatus();showToast('💾 已手动保存')" style="padding:5px 12px;font-size:12px;">💾 立即保存</button>
+        <button class="btn btn-sm" onclick="if(confirm('确定要清除本地缓存吗？这不会影响当前页面的内容。')){clearLocalStorageCache();}" style="padding:5px 12px;font-size:12px;background:#f5f5f5;border:1px solid #ccc;">🗑️ 清除缓存</button>
+      </div>
+      <p style="font-size:11px;color:#999;margin:10px 0 0;line-height:1.5;">
+        编辑内容会自动保存到浏览器本地，刷新或关闭页面后再次打开会自动恢复。<br>
+        清除缓存只会删除保存的记录，不会影响当前页面正在编辑的内容。
+      </p>
+    </div>
+  </details>
 
   <!-- 主题设置 -->
   <details open>
@@ -167,8 +203,31 @@ summary:hover{background:#eaeaea}
             <button onclick="rtCmd('italic','rt-disambiguation')" title="斜体"><i>I</i></button>
             <button onclick="rtCmd('underline','rt-disambiguation')" title="下划线"><u>U</u></button>
             <span class="sep"></span>
-            <button onclick="rtLink('rt-disambiguation')" title="插入超链接">🔗 链接</button>
-            <button onclick="rtCmd('removeFormat','rt-disambiguation')" title="清除格式">✕ 清除</button>
+            <select onchange="rtFontSize(this.value, 'rt-disambiguation'); this.value='';" title="字号" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">字号</option>
+  
+  <option value="12px">12px</option>
+  <option value="13px">13px</option>
+  <option value="14px">14px</option>
+  <option value="15px">15px（默认）</option>
+  <option value="16px">16px</option>
+  <option value="18px">18px</option>
+  <option value="20px">20px</option>
+  <option value="24px">24px</option>
+  <option value="28px">28px</option>
+  <option value="32px">32px</option>
+</select><select onchange="rtLineHeight(this.value, 'rt-disambiguation'); this.value='';" title="行距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">行距</option>
+  <option value="default">默认</option>
+  <option value="1">1.0</option>
+  <option value="1.2">1.2</option>
+  <option value="1.5">1.5</option>
+  <option value="1.8">1.8</option>
+  <option value="2">2.0</option>
+  <option value="2.5">2.5</option>
+  <option value="3">3.0</option>
+</select><button onclick="rtLink('rt-disambiguation')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('rt-disambiguation')" title="清除格式">✕ 清除</button>
+            
           </div>
           <div class="rich-editor" id="rt-disambiguation" contenteditable="true" data-placeholder="消歧义引导语…" oninput="updateData()">这篇文章讲述的是 <span style="color:#3366cc;">作品名</span> 中登场的角色。如果您在寻找 <span style="color:#3366cc;">其他同名角色</span>，请移步 <span style="color:#3366cc;">角色名（消歧义）</span>。</div>
         </div>
@@ -255,8 +314,31 @@ summary:hover{background:#eaeaea}
           <button onclick="rtCmd('italic')" title="斜体"><i>I</i></button>
           <button onclick="rtCmd('underline')" title="下划线"><u>U</u></button>
           <span class="sep"></span>
-          <button onclick="rtLink()" title="插入超链接">🔗 链接</button>
-          <button onclick="rtCmd('removeFormat')" title="清除格式">✕ 清除</button>
+          <select onchange="rtFontSize(this.value, 'summary-editor'); this.value='';" title="字号" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">字号</option>
+  
+  <option value="12px">12px</option>
+  <option value="13px">13px</option>
+  <option value="14px">14px</option>
+  <option value="15px">15px（默认）</option>
+  <option value="16px">16px</option>
+  <option value="18px">18px</option>
+  <option value="20px">20px</option>
+  <option value="24px">24px</option>
+  <option value="28px">28px</option>
+  <option value="32px">32px</option>
+</select><select onchange="rtLineHeight(this.value, 'summary-editor'); this.value='';" title="行距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">行距</option>
+  <option value="default">默认</option>
+  <option value="1">1.0</option>
+  <option value="1.2">1.2</option>
+  <option value="1.5">1.5</option>
+  <option value="1.8">1.8</option>
+  <option value="2">2.0</option>
+  <option value="2.5">2.5</option>
+  <option value="3">3.0</option>
+</select><button onclick="rtLink()" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat()" title="清除格式">✕ 清除</button>
+          
         </div>
         <div class="rich-editor" id="summary-editor" contenteditable="true" data-placeholder="在此输入角色简介…支持加粗、斜体、超链接" oninput="updateData()"></div>
       </div>
@@ -325,8 +407,31 @@ summary:hover{background:#eaeaea}
           <button onclick="rtCmd('italic','detail-editor')" title="斜体"><i>I</i></button>
           <button onclick="rtCmd('underline','detail-editor')" title="下划线"><u>U</u></button>
           <span class="sep"></span>
-          <button onclick="rtLink('detail-editor')" title="插入超链接">🔗 链接</button>
-          <button onclick="rtCmd('removeFormat','detail-editor')" title="清除格式">✕ 清除</button>
+          <select onchange="rtFontSize(this.value, 'detail-editor'); this.value='';" title="字号" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">字号</option>
+  
+  <option value="12px">12px</option>
+  <option value="13px">13px</option>
+  <option value="14px">14px</option>
+  <option value="15px">15px（默认）</option>
+  <option value="16px">16px</option>
+  <option value="18px">18px</option>
+  <option value="20px">20px</option>
+  <option value="24px">24px</option>
+  <option value="28px">28px</option>
+  <option value="32px">32px</option>
+</select><select onchange="rtLineHeight(this.value, 'detail-editor'); this.value='';" title="行距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">行距</option>
+  <option value="default">默认</option>
+  <option value="1">1.0</option>
+  <option value="1.2">1.2</option>
+  <option value="1.5">1.5</option>
+  <option value="1.8">1.8</option>
+  <option value="2">2.0</option>
+  <option value="2.5">2.5</option>
+  <option value="3">3.0</option>
+</select><button onclick="rtLink('detail-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('detail-editor')" title="清除格式">✕ 清除</button>
+          
         </div>
         <div class="rich-editor" id="detail-editor" contenteditable="true" data-placeholder="在此输入细节内容…" oninput="data.detailChapter.content=this.innerHTML;updateAll()"></div>
       </div>
@@ -354,8 +459,31 @@ summary:hover{background:#eaeaea}
           <button onclick="rtCmd('italic','nameorigin-editor')" title="斜体"><i>I</i></button>
           <button onclick="rtCmd('underline','nameorigin-editor')" title="下划线"><u>U</u></button>
           <span class="sep"></span>
-          <button onclick="rtLink('nameorigin-editor')" title="插入超链接">🔗 链接</button>
-          <button onclick="rtCmd('removeFormat','nameorigin-editor')" title="清除格式">✕ 清除</button>
+          <select onchange="rtFontSize(this.value, 'nameorigin-editor'); this.value='';" title="字号" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">字号</option>
+  
+  <option value="12px">12px</option>
+  <option value="13px">13px</option>
+  <option value="14px">14px</option>
+  <option value="15px">15px（默认）</option>
+  <option value="16px">16px</option>
+  <option value="18px">18px</option>
+  <option value="20px">20px</option>
+  <option value="24px">24px</option>
+  <option value="28px">28px</option>
+  <option value="32px">32px</option>
+</select><select onchange="rtLineHeight(this.value, 'nameorigin-editor'); this.value='';" title="行距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">行距</option>
+  <option value="default">默认</option>
+  <option value="1">1.0</option>
+  <option value="1.2">1.2</option>
+  <option value="1.5">1.5</option>
+  <option value="1.8">1.8</option>
+  <option value="2">2.0</option>
+  <option value="2.5">2.5</option>
+  <option value="3">3.0</option>
+</select><button onclick="rtLink('nameorigin-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('nameorigin-editor')" title="清除格式">✕ 清除</button>
+          
         </div>
         <div class="rich-editor" id="nameorigin-editor" contenteditable="true" data-placeholder="在此输入名字来源内容…" oninput="data.nameOriginChapter.content=this.innerHTML;updateAll()"></div>
       </div>
@@ -914,12 +1042,198 @@ async function fetchPokemonFull(pokemonIdOrName) {
   }
 }
 
+// ==================== 给所有富文本工具栏添加源码切换和注释按钮 ====================
+function addCleanButtonToToolbars() {
+  document.querySelectorAll('.rt-toolbar').forEach(toolbar => {
+
+    // 添加源码/所见切换按钮
+    if (!toolbar.querySelector('.source-toggle-btn')) {
+      const sep = document.createElement('span');
+      sep.className = 'sep';
+      toolbar.appendChild(sep);
+      const btn = document.createElement('button');
+      btn.className = 'source-toggle-btn';
+      btn.title = '切换HTML源码模式';
+      btn.innerHTML = '⌨ 源码';
+      btn.onclick = function(e) {
+        e.preventDefault();
+        const wrap = toolbar.closest('.rt-wrap');
+        const editor = wrap ? wrap.querySelector('.rich-editor') : activeEditor;
+        if (editor) toggleSourceMode(editor, btn);
+      };
+      toolbar.appendChild(btn);
+    }
+    // 添加注释/提示按钮（选中文字下方虚线，悬停显示额外信息）
+    if (!toolbar.querySelector('.explain-btn')) {
+      const sep = document.createElement('span');
+      sep.className = 'sep';
+      toolbar.appendChild(sep);
+      const btn = document.createElement('button');
+      btn.className = 'explain-btn';
+      btn.title = '给选中文字添加注释/提示（虚线+悬停弹窗）';
+      btn.innerHTML = '💬 注释';
+      btn.onclick = function(e) {
+        e.preventDefault();
+        const wrap = toolbar.closest('.rt-wrap');
+        const editor = wrap ? wrap.querySelector('.rich-editor') : activeEditor;
+        if (editor) rtAnnotation(editor);
+        else showToast('请先点击编辑区域');
+      };
+      toolbar.appendChild(btn);
+    }
+
+  });
+}
+
+// ==================== 注释/提示功能（选中文字加注释，悬停弹出自定义对话框tooltip） ====================
+function rtAnnotation(editor) {
+  if (!editor) { showToast('请先点击编辑区域'); return; }
+  editor.focus();
+  const selection = window.getSelection();
+  if (!selection.rangeCount || selection.isCollapsed) {
+    showToast('请先选中要添加注释的文字');
+    return;
+  }
+  
+  const range = selection.getRangeAt(0);
+  const selectedText = range.toString().trim();
+  if (!selectedText) {
+    showToast('请先选中要添加注释的文字');
+    return;
+  }
+  
+  // 检查选中的文字是否已经在注释里
+  const container = range.commonAncestorContainer;
+  const existingAnnotation = (container.nodeType === 1 ? container : container.parentElement).closest('.explain');
+  let defaultInfo = '';
+  if (existingAnnotation) {
+    defaultInfo = existingAnnotation.getAttribute('data-annotation') || '';
+  }
+  
+  // 弹出 prompt 让用户输入额外信息
+  const info = prompt('请输入注释/提示信息（鼠标悬停时显示）：', defaultInfo);
+  if (info === null) return; // 用户取消
+  if (info.trim() === '') {
+    // 如果输入为空，且已经在注释里，删除注释
+    if (existingAnnotation) {
+      const parent = existingAnnotation.parentNode;
+      while (existingAnnotation.firstChild) {
+        parent.insertBefore(existingAnnotation.firstChild, existingAnnotation);
+      }
+      parent.removeChild(existingAnnotation);
+      syncEditorData(editor);
+      updateAll();
+      showToast('🗑️ 注释已删除');
+    }
+    return;
+  }
+  
+  // 如果已经在注释里，直接更新 data-annotation
+  if (existingAnnotation) {
+    existingAnnotation.setAttribute('data-annotation', info);
+    syncEditorData(editor);
+    updateAll();
+    showToast('✨ 注释已更新');
+    return;
+  }
+  
+  // 创建注释 span 元素，包裹选中的文字
+  const annotationSpan = document.createElement('span');
+  annotationSpan.className = 'explain';
+  annotationSpan.setAttribute('data-annotation', info);
+  
+  // 提取选中的内容，放到 span 里
+  const frag = range.extractContents();
+  annotationSpan.appendChild(frag);
+  
+  // 插入 span
+  range.insertNode(annotationSpan);
+  
+  // 重新选中注释里的文字
+  const newRange = document.createRange();
+  newRange.selectNodeContents(annotationSpan);
+  selection.removeAllRanges();
+  selection.addRange(newRange);
+  
+  syncEditorData(editor);
+  updateAll();
+  showToast('✨ 注释已添加');
+}
+
+// ==================== 把 data 对象同步到所有编辑器（加载缓存和导入配置时都需要调用） ====================
+function syncDataToEditors() {
+  // 同步基础信息
+  if (data.pageTitle !== undefined) document.getElementById('rt-page-title').innerHTML = data.pageTitle;
+  if (data.disambiguation !== undefined) document.getElementById('rt-disambiguation').innerHTML = data.disambiguation;
+  if (data.charName !== undefined) document.getElementById('rt-char-name').innerHTML = data.charName;
+  if (data.jpName !== undefined) document.getElementById('rt-jp-name').innerHTML = data.jpName;
+  if (data.enName !== undefined) document.getElementById('rt-en-name').innerHTML = data.enName;
+  if (data.slogan !== undefined) document.getElementById('rt-slogan').innerHTML = data.slogan;
+  if (data.imageUrl !== undefined) document.getElementById('image-url').value = data.imageUrl;
+  if (data.imageCaption !== undefined) document.getElementById('rt-image-caption').innerHTML = data.imageCaption;
+  if (data.summary !== undefined) document.getElementById('summary-editor').innerHTML = data.summary;
+  
+  // 同步细节和名字来源
+  if (data.detailChapter) {
+    document.getElementById('detail-title').value = data.detailChapter.title || '';
+    document.getElementById('detail-editor').innerHTML = data.detailChapter.content || '';
+  }
+  if (data.nameOriginChapter) {
+    document.getElementById('nameorigin-title').value = data.nameOriginChapter.title || '';
+    document.getElementById('nameorigin-editor').innerHTML = data.nameOriginChapter.content || '';
+  }
+  
+  // 同步主题颜色
+  if (data.theme) {
+    document.getElementById('theme-primary').value = data.theme.primary;
+    document.getElementById('theme-dark').value = data.theme.dark;
+    document.getElementById('theme-light').value = data.theme.light;
+    document.getElementById('theme-divider').value = data.theme.divider;
+    document.getElementById('theme-primary-picker').value = data.theme.primary;
+    document.getElementById('theme-dark-picker').value = data.theme.dark;
+    document.getElementById('theme-light-picker').value = data.theme.light;
+    document.getElementById('theme-divider-picker').value = data.theme.divider;
+  }
+  
+  // 同步宝可梦队伍颜色
+  if (data.pokemonTheme) {
+    document.getElementById('pkmn-theme-bg').value = data.pokemonTheme.bg;
+    document.getElementById('pkmn-theme-light').value = data.pokemonTheme.light;
+    document.getElementById('pkmn-theme-border').value = data.pokemonTheme.border;
+    document.getElementById('pkmn-theme-bg-picker').value = data.pokemonTheme.bg;
+    document.getElementById('pkmn-theme-light-picker').value = data.pokemonTheme.light;
+    document.getElementById('pkmn-theme-border-picker').value = data.pokemonTheme.border;
+  }
+  
+  // 同步信息框图片滑块
+  if (data.infoboxCardSize) {
+    const heightSlider = document.getElementById('infobox-card-height');
+    if (heightSlider) heightSlider.value = data.infoboxCardSize.height || 420;
+  }
+  if (data.infoboxImageOffset) {
+    const xSlider = document.getElementById('infobox-img-x');
+    const ySlider = document.getElementById('infobox-img-y');
+    const scaleSlider = document.getElementById('infobox-img-scale');
+    if (xSlider) xSlider.value = data.infoboxImageOffset.x || 0;
+    if (ySlider) ySlider.value = data.infoboxImageOffset.y || 0;
+    if (scaleSlider) scaleSlider.value = data.infoboxImageOffset.scale || 100;
+  }
+}
+
 // ==================== 初始化 ====================
 function init() {
   // 设置简述默认内容
   document.getElementById('summary-editor').innerHTML = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.<br><br>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
   data.summary = document.getElementById('summary-editor').innerHTML;
   data.disambiguation = document.getElementById('rt-disambiguation').innerHTML;
+
+  // 从 localStorage 加载自动保存的编辑进度（如果有）
+  const cachedData = loadFromLocalStorage();
+  if (cachedData) {
+    data = Object.assign(data, cachedData);
+    // 把缓存数据同步到所有编辑器（关键！否则编辑栏还是默认占位字符）
+    syncDataToEditors();
+  }
 
   // 检查是否有导入的配置（从 sessionStorage 读取，导入配置后刷新页面时使用）
   let hasImported = false;
@@ -992,9 +1306,29 @@ function init() {
   updateInfoboxImageSliders();
   updateAll();
   addColorButtonToAll();
+  // 给所有富文本工具栏添加源码切换和注释按钮
+  addCleanButtonToToolbars();
+  // 初始化侧边栏宽度
+  initSidebarWidth();
+  // 更新缓存状态显示
+  updateCacheStatus();
   // 预加载宝可梦数据库（后台异步，不阻塞界面）
   loadAllMoves();
   loadPokemonSearchList();
+  // tooltip 智能定位：默认下方，靠近底部时自动上方
+  document.addEventListener('mouseover', function(e) {
+    const explain = e.target.closest('.explain');
+    if (explain) {
+      const rect = explain.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const distanceToBottom = viewportHeight - rect.bottom;
+      if (distanceToBottom < 120) {
+        explain.classList.add('explain-top');
+      } else {
+        explain.classList.remove('explain-top');
+      }
+    }
+  });
   // 延迟给iframe添加事件监听，实时记录滚动和折叠状态
   setTimeout(() => {
     setupPreviewEventListeners();
@@ -1094,8 +1428,32 @@ function renderInfoboxRows() {
           <div class="rt-toolbar">
             <button onclick="rtCmd('bold','${valueId}')" title="加粗"><b>B</b></button>
             <button onclick="rtCmd('italic','${valueId}')" title="斜体"><i>I</i></button>
-            <button onclick="rtLink('${valueId}')" title="超链接">🔗</button>
-            <button onclick="rtCmd('removeFormat','${valueId}')" title="清除格式">✕</button>
+            <select onchange="rtFontSize(this.value, '${valueId}'); this.value='';" title="字号" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+              <option value="">字号</option>
+              <option value="12px">12px</option>
+              <option value="13px">13px</option>
+              <option value="14px">14px</option>
+              <option value="15px">15px（默认）</option>
+              <option value="16px">16px</option>
+              <option value="18px">18px</option>
+              <option value="20px">20px</option>
+              <option value="24px">24px</option>
+              <option value="28px">28px</option>
+              <option value="32px">32px</option>
+            </select>
+            <select onchange="rtLineHeight(this.value, '${valueId}'); this.value='';" title="行距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+              <option value="">行距</option>
+              <option value="default">默认</option>
+              <option value="1">1.0</option>
+              <option value="1.2">1.2</option>
+              <option value="1.5">1.5</option>
+              <option value="1.8">1.8</option>
+              <option value="2">2.0</option>
+              <option value="2.5">2.5</option>
+              <option value="3">3.0</option>
+            </select>
+            <button onclick="rtLink('${valueId}')" title="超链接">🔗</button>            <button onclick="rtClearFormat('${valueId}')" title="清除格式">✕</button>
+
           </div>
           <div class="rich-editor" id="${valueId}" contenteditable="true" data-placeholder="值…" oninput="data.infoboxRows[${i}].value=this.innerHTML;updateAll()">${row.value}</div>
         </div>
@@ -1106,6 +1464,12 @@ function renderInfoboxRows() {
     container.appendChild(div);
   });
   addColorButtonToAll();
+  // 给所有富文本工具栏添加源码切换和注释按钮
+  addCleanButtonToToolbars();
+  // 初始化侧边栏宽度
+  initSidebarWidth();
+  // 更新缓存状态显示
+  updateCacheStatus();
 }
 function addInfoboxRow() {
   data.infoboxRows.push({label:'', value:''});
@@ -1200,8 +1564,32 @@ function renderChapters() {
           <button onclick="rtCmd('italic',${i})" title="斜体"><i>I</i></button>
           <button onclick="rtCmd('underline',${i})" title="下划线"><u>U</u></button>
           <span class="sep"></span>
-          <button onclick="rtLink(${i})" title="插入超链接">🔗 链接</button>
-          <button onclick="rtCmd('removeFormat',${i})" title="清除格式">✕ 清除</button>
+          <select onchange="rtFontSize(this.value, ${i}); this.value='';" title="字号" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+            <option value="">字号</option>
+            <option value="12px">12px</option>
+            <option value="13px">13px</option>
+            <option value="14px">14px</option>
+            <option value="15px">15px（默认）</option>
+            <option value="16px">16px</option>
+            <option value="18px">18px</option>
+            <option value="20px">20px</option>
+            <option value="24px">24px</option>
+            <option value="28px">28px</option>
+            <option value="32px">32px</option>
+          </select>
+          <select onchange="rtLineHeight(this.value, ${i}); this.value='';" title="行距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+            <option value="">行距</option>
+            <option value="default">默认</option>
+            <option value="1">1.0</option>
+            <option value="1.2">1.2</option>
+            <option value="1.5">1.5</option>
+            <option value="1.8">1.8</option>
+            <option value="2">2.0</option>
+            <option value="2.5">2.5</option>
+            <option value="3">3.0</option>
+          </select>
+          <button onclick="rtLink(${i})" title="插入超链接">🔗 链接</button>          <button onclick="rtClearFormat(${i})" title="清除格式">✕ 清除</button>
+
         </div>
         <div class="rich-editor" id="chapter-editor-${i}" contenteditable="true" data-placeholder="在此输入章节正文…" oninput="data.chapters[${i}].content=this.innerHTML;updateAll()">${ch.content}</div>
       </div>
@@ -1214,6 +1602,12 @@ function renderChapters() {
     renderChapterImages(i);
   });
   addColorButtonToAll();
+  // 给所有富文本工具栏添加源码切换和注释按钮
+  addCleanButtonToToolbars();
+  // 初始化侧边栏宽度
+  initSidebarWidth();
+  // 更新缓存状态显示
+  updateCacheStatus();
 }
 function renderChapterImages(chIdx) {
   const container = document.getElementById('chapter-images-' + chIdx);
@@ -1327,6 +1721,12 @@ function renderRelationships() {
     container.appendChild(div);
   });
   addColorButtonToAll();
+  // 给所有富文本工具栏添加源码切换和注释按钮
+  addCleanButtonToToolbars();
+  // 初始化侧边栏宽度
+  initSidebarWidth();
+  // 更新缓存状态显示
+  updateCacheStatus();
 }
 function addRelationship() {
   data.relationships.push({name:'新角色', desc:'关系描述…'});
@@ -1672,6 +2072,147 @@ let activeEditor = null;
 document.addEventListener('focusin', function(e) {
   if (e.target.classList.contains('rich-editor')) activeEditor = e.target;
 });
+// ==================== 富文本HTML清理函数 ====================
+// 判断元素是否是需要保留完整样式的复杂元素（表格、剧透提示、图片等）
+function isComplexElement(el) {
+  if (!el || el.nodeType !== 1) return false;
+  const html = el.outerHTML || '';
+  // 包含表格、图片、剧透提示类名的元素保留样式
+  if (html.includes('<table') || html.includes('<img') || html.includes('spoiler-notice') || html.includes('card col-12')) return true;
+  if (el.classList && (el.classList.contains('spoiler-notice') || el.classList.contains('spoiler-notice-wrapper'))) return true;
+  return false;
+}
+
+// 清理粘贴的HTML：移除空标签、多余br、标准化行距
+function cleanPastedHtml(container) {
+  // 1. 移除空的 div/p/span（但不处理复杂元素内部）
+  const emptySelectors = ['div', 'p', 'span'];
+  emptySelectors.forEach(tag => {
+    const elements = container.querySelectorAll(tag);
+    elements.forEach(el => {
+      // 跳过复杂元素及其子元素
+      if (isComplexElement(el) || el.closest('.spoiler-notice, .spoiler-notice-wrapper, table')) return;
+      // 检查是否为空（没有文本内容，也没有图片/链接等）
+      const text = el.textContent.trim();
+      const hasImg = el.querySelector('img');
+      const hasLink = el.querySelector('a');
+      const hasBr = el.querySelector('br');
+      if (text === '' && !hasImg && !hasLink && !hasBr && el.children.length === 0) {
+        el.remove();
+      }
+    });
+  });
+
+  // 2. 移除连续多余的 br（最多保留1个）
+  const brs = container.querySelectorAll('br');
+  let prevBr = null;
+  brs.forEach(br => {
+    if (isComplexElement(br) || br.closest('.spoiler-notice, .spoiler-notice-wrapper, table')) { prevBr = br; return; }
+    if (prevBr && br.previousElementSibling === prevBr) {
+      br.remove();
+    } else {
+      prevBr = br;
+    }
+  });
+
+  // 3. 标准化普通文本元素的样式（移除过大的line-height、margin、padding）
+  const textElements = container.querySelectorAll('div, p, span');
+  textElements.forEach(el => {
+    if (isComplexElement(el) || el.closest('.spoiler-notice, .spoiler-notice-wrapper, table')) return;
+    const style = el.getAttribute('style') || '';
+    if (style) {
+      // 移除 line-height 大于 2 的
+      el.style.lineHeight = '';
+      // 移除 margin 和 padding（避免过大的行距）
+      el.style.margin = '';
+      el.style.marginTop = '';
+      el.style.marginBottom = '';
+      el.style.padding = '';
+      el.style.paddingTop = '';
+      el.style.paddingBottom = '';
+      // 如果样式为空，移除 style 属性
+      if (el.getAttribute('style') === '') el.removeAttribute('style');
+    }
+  });
+
+  return container;
+}
+
+
+// 富文本编辑器 所见/源码 模式切换
+function toggleSourceMode(editor, btn) {
+  const wrap = editor.closest('.rt-wrap');
+  if (!wrap) return;
+  let textarea = wrap.querySelector('.source-textarea');
+  const isSourceMode = textarea && textarea.style.display !== 'none';
+
+  if (!isSourceMode) {
+    // 切换到源码模式
+    if (!textarea) {
+      textarea = document.createElement('textarea');
+      textarea.className = 'source-textarea';
+      textarea.style.display = 'none';
+      // 输入时同步数据
+      textarea.addEventListener('input', function() {
+        editor.innerHTML = this.value;
+        syncEditorData(editor);
+        updateAll();
+      });
+      wrap.appendChild(textarea);
+    }
+    textarea.value = editor.innerHTML;
+    textarea.style.display = 'block';
+    editor.style.display = 'none';
+    btn.innerHTML = '👁 所见';
+    btn.classList.add('active');
+    btn.title = '切换回所见即所得模式';
+  } else {
+    // 切换回所见模式
+    editor.innerHTML = textarea.value;
+    textarea.style.display = 'none';
+    editor.style.display = '';
+    btn.innerHTML = '⌨ 源码';
+    btn.classList.remove('active');
+    btn.title = '切换HTML源码模式';
+    syncEditorData(editor);
+    updateAll();
+  }
+}
+
+// 粘贴事件：保留所有HTML样式属性，避免被浏览器过滤
+document.addEventListener('paste', function(e) {
+  const editor = e.target.closest('.rich-editor');
+  if (!editor) return;
+  const html = e.clipboardData && e.clipboardData.getData('text/html');
+  if (!html) return;
+  e.preventDefault();
+  editor.focus();
+  const selection = window.getSelection();
+  if (!selection.rangeCount) {
+    editor.appendChild(document.createTextNode(''));
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+  const range = selection.getRangeAt(0);
+  range.deleteContents();
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  // 智能清理粘贴的HTML：移除空标签、多余br、标准化行距（保留表格/剧透提示等复杂元素样式）
+  cleanPastedHtml(temp);
+  const frag = document.createDocumentFragment();
+  while (temp.firstChild) {
+    frag.appendChild(temp.firstChild);
+  }
+  range.insertNode(frag);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  syncEditorData(editor);
+  updateAll();
+});
 // 统一同步富文本编辑器数据到 data 对象
 function syncEditorData(editor) {
   const id = editor.id;
@@ -1691,6 +2232,8 @@ function syncEditorData(editor) {
   else if (id === 'rt-en-name') data.enName = editor.innerHTML;
   else if (id === 'rt-slogan') data.slogan = editor.innerHTML;
   else if (id === 'rt-image-caption') data.imageCaption = editor.innerHTML;
+  else if (id === 'nameorigin-editor') data.nameOriginChapter.content = editor.innerHTML;
+  else if (id === 'detail-editor') data.detailChapter.content = editor.innerHTML;
 }
 // 解析工具栏参数：数字=章节索引，字符串=编辑器ID
 function resolveEditor(arg) {
@@ -1701,6 +2244,7 @@ function resolveEditor(arg) {
 function rtCmd(cmd, arg) {
   const editor = resolveEditor(arg);
   if (!editor) { alert('请先点击编辑区域'); return; }
+
   editor.focus();
   document.execCommand(cmd, false, null);
   syncEditorData(editor);
@@ -1719,6 +2263,245 @@ function rtLink(arg) {
   }
 }
 
+// ==================== 清除格式（全局作用域，可被 onclick 调用） ====================
+function rtClearFormat(arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { showToast('请先点击编辑区域'); return; }
+  editor.focus();
+  
+  const selection = window.getSelection();
+  
+  // 如果没有选中文字，清除整个编辑器的样式
+  if (!selection.rangeCount || selection.isCollapsed) {
+    const temp = document.createElement('div');
+    temp.innerHTML = editor.innerHTML;
+    cleanAllStyles(temp);
+    
+    // 把所有标题标签转换成 div，避免标题标签影响 execCommand 行为
+    ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(tag => {
+      temp.querySelectorAll(tag).forEach(el => {
+        const div = document.createElement('div');
+        while (el.firstChild) div.appendChild(el.firstChild);
+        el.parentNode.replaceChild(div, el);
+      });
+    });
+    
+    // 确保清除后的内容被块级元素包裹
+    const blockTags = ['DIV', 'P', 'UL', 'OL', 'TABLE', 'BLOCKQUOTE', 'PRE'];
+    let hasBlockChild = false;
+    for (let i = 0; i < temp.children.length; i++) {
+      if (blockTags.includes(temp.children[i].tagName)) {
+        hasBlockChild = true;
+        break;
+      }
+    }
+    if (!hasBlockChild && temp.textContent.trim() !== '') {
+      const wrapper = document.createElement('div');
+      while (temp.firstChild) {
+        wrapper.appendChild(temp.firstChild);
+      }
+      temp.appendChild(wrapper);
+    }
+    
+    editor.innerHTML = temp.innerHTML;
+    
+    // 关键：重新聚焦编辑器，恢复 contenteditable 状态
+    editor.focus();
+    // 选中所有内容再取消，确保 execCommand 能正常工作
+    document.execCommand('selectAll', false, null);
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.collapse(false); // 取消选中，光标移到末尾
+    }
+    
+    syncEditorData(editor);
+    updateAll();
+    showToast('✨ 已清除全部格式');
+    return;
+  }
+  
+  // 如果选中了文字，只清除选中文字的样式
+  const range = selection.getRangeAt(0);
+  
+  // 克隆选中范围的内容
+  const fragment = range.cloneContents();
+  const temp = document.createElement('div');
+  temp.appendChild(fragment);
+  
+  // 清理选中内容的样式
+  cleanAllStyles(temp);
+  
+  // 删除选中范围的原内容
+  range.deleteContents();
+  
+  // 把清理后的内容插入回去
+  const newFragment = document.createDocumentFragment();
+  let lastNode = null;
+  while (temp.firstChild) {
+    lastNode = temp.firstChild;
+    newFragment.appendChild(lastNode);
+  }
+  range.insertNode(newFragment);
+  
+  // 把光标放在清理后内容的末尾
+  if (lastNode) {
+    const newRange = document.createRange();
+    newRange.setStartAfter(lastNode);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+  
+  // 额外清理块级祖先元素上的 font-size 和 line-height 样式
+  const checkRange = selection.getRangeAt(0);
+  editor.querySelectorAll('[style*="font-size"], [style*="line-height"]').forEach(el => {
+    if (el.contains(checkRange.commonAncestorContainer) || checkRange.intersectsNode(el)) {
+      el.style.fontSize = '';
+      el.style.lineHeight = '';
+      if (!el.getAttribute('style') || el.getAttribute('style').trim() === '') {
+        el.removeAttribute('style');
+      }
+    }
+  });
+  
+  syncEditorData(editor);
+  updateAll();
+  showToast('✨ 已清除选中文字的格式');
+}
+// ==================== 字号设置 ====================
+function rtFontSize(size, arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { showToast('请先点击编辑区域'); return; }
+  editor.focus();
+  
+  const selection = window.getSelection();
+  if (!selection.rangeCount || selection.isCollapsed) {
+    showToast('请先选中要设置字号的文字');
+    return;
+  }
+  
+  // 如果选择的是"默认"，清除字号样式（包括块级祖先元素上的 font-size）
+  if (size === 'default' || size === '') {
+    const range = selection.getRangeAt(0);
+    
+    // 遍历编辑器内所有有 font-size 样式的元素
+    editor.querySelectorAll('[style*="font-size"]').forEach(el => {
+      // 判断元素是否在选中范围内，或是选中范围的祖先元素
+      const isInRange = range.intersectsNode(el);
+      const isAncestor = el.contains(range.commonAncestorContainer);
+      if (isInRange || isAncestor) {
+        el.style.fontSize = '';
+        if (!el.getAttribute('style') || el.getAttribute('style').trim() === '') {
+          el.removeAttribute('style');
+        }
+      }
+    });
+    
+    syncEditorData(editor);
+    updateAll();
+    showToast('✨ 已恢复默认字号');
+    return;
+  }
+  
+  // 用 execCommand 设置字号（会生成 font size=7 标签）
+  document.execCommand('fontSize', false, '7');
+  
+  // 把所有 font size=7 标签转换成 span style="font-size: XXpx;"
+  editor.querySelectorAll('font[size="7"]').forEach(font => {
+    const span = document.createElement('span');
+    span.style.fontSize = size;
+    while (font.firstChild) span.appendChild(font.firstChild);
+    font.parentNode.replaceChild(span, font);
+  });
+  
+  syncEditorData(editor);
+  updateAll();
+  showToast('✨ 字号已设置为 ' + size);
+}
+// ==================== 行距设置 ====================
+function rtLineHeight(value, arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { showToast('请先点击编辑区域'); return; }
+  editor.focus();
+  
+  const selection = window.getSelection();
+  if (!selection.rangeCount || selection.isCollapsed) {
+    showToast('请先选中要设置行距的段落');
+    return;
+  }
+  
+  const range = selection.getRangeAt(0);
+  
+  // 遍历编辑器内所有块级元素，判断是否与选中范围相交或是祖先元素
+  editor.querySelectorAll('div, p, h1, h2, h3, h4, h5, h6, li, blockquote, pre').forEach(el => {
+    if (range.intersectsNode(el) || el.contains(range.commonAncestorContainer)) {
+      if (value === 'default' || value === '') {
+        el.style.lineHeight = '';
+        if (!el.getAttribute('style') || el.getAttribute('style').trim() === '') {
+          el.removeAttribute('style');
+        }
+      } else {
+        el.style.lineHeight = value;
+      }
+    }
+  });
+  
+  syncEditorData(editor);
+  updateAll();
+  if (value === 'default' || value === '') {
+    showToast('✨ 已恢复默认行距');
+  } else {
+    showToast('✨ 行距已设置为 ' + value);
+  }
+}
+
+// 彻底清理元素中所有内联样式和格式标签（保留表格/剧透提示等复杂元素）
+function cleanAllStyles(root) {
+  // 1. 移除所有非复杂元素的 style 属性
+  root.querySelectorAll('[style]').forEach(el => {
+    if (!isComplexElement(el) && !el.closest('table, .spoiler-notice, .spoiler-notice-wrapper')) {
+      el.removeAttribute('style');
+    }
+  });
+  
+  // 2. 移除所有 font 标签，保留内容
+  root.querySelectorAll('font').forEach(el => {
+    const parent = el.parentNode;
+    while (el.firstChild) parent.insertBefore(el.firstChild, el);
+    parent.removeChild(el);
+  });
+  
+  // 3. 移除所有空的 span 标签
+  root.querySelectorAll('span').forEach(el => {
+    if (!isComplexElement(el) && !el.closest('table, .spoiler-notice')) {
+      if (el.textContent.trim() === '' && el.children.length === 0) {
+        el.remove();
+      }
+    }
+  });
+  
+  // 4. 移除所有 big、small、strike、tt、s 等格式标签，保留内容
+  ['big', 'small', 'strike', 'tt', 's'].forEach(tag => {
+    root.querySelectorAll(tag).forEach(el => {
+      if (!el.closest('table, .spoiler-notice')) {
+        const parent = el.parentNode;
+        while (el.firstChild) parent.insertBefore(el.firstChild, el);
+        parent.removeChild(el);
+      }
+    });
+  });
+  
+  // 5. 清理 div、p 等块级元素的样式和 align 属性
+  root.querySelectorAll('div, p').forEach(el => {
+    if (!isComplexElement(el) && !el.closest('table, .spoiler-notice, .spoiler-notice-wrapper')) {
+      el.removeAttribute('style');
+      el.removeAttribute('align');
+    }
+  });
+  
+  return root;
+}
 // ==================== 文字颜色（优化版：预设颜色面板） ====================
 const PRESET_COLORS = [
   '#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#ffffff',
@@ -2121,16 +2904,24 @@ function generateCode() {
     }
   });
 
+  // 页面标题：留空则自动删除整行
+  const pageTitlePlain = getPlainText(d.pageTitle);
+  const pageTitleHtml = pageTitlePlain ? `
+      <p style="margin:0;"><span style="font-size:26px;font-weight:normal;">${d.pageTitle}</span></p>
+      <hr style="border:none;border-top:1px solid #a2a9b1;margin:8px 0;">` : '';
+
+  // 消歧义引导语：留空则自动删除整行
+  const disambiguationPlain = getPlainText(d.disambiguation);
+  const disambiguationHtml = disambiguationPlain ? `
+      <p style="font-size:15px;font-style:italic;margin:0;color:#555;line-height:1.5;">${d.disambiguation}</p>
+      <hr style="border:none;border-top:1px solid #a2a9b1;margin:8px 0 12px 0;">` : '';
+
   return `<!-- ========== 神奇宝贝百科风格代码生成器模板 ========== -->
 <!-- 生成器：神奇宝贝百科风格代码生成器 -->
 <div class="container-fluid" style="padding-left:1px;padding-right:1px;">
   <div class="card bg-light border-0" style="border-radius:0;">
     <!-- 标题区 -->
-    <div class="container pt-2 pb-0 text-dark">
-      <p style="margin:0;"><span style="font-size:26px;font-weight:normal;">${d.pageTitle}</span></p>
-      <hr style="border:none;border-top:1px solid #a2a9b1;margin:8px 0;">
-      <p style="font-size:15px;font-style:italic;margin:0;color:#555;line-height:1.5;">${d.disambiguation}</p>
-      <hr style="border:none;border-top:1px solid #a2a9b1;margin:8px 0 12px 0;">
+    <div class="container pt-2 pb-0 text-dark">${pageTitleHtml}${disambiguationHtml}
     </div>
     <!-- 正文区 -->
     <div class="container text-dark">
@@ -2184,7 +2975,89 @@ function updatePreview(code) {
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <style>body{margin:0;padding:0;font-family:-apple-system,'Microsoft YaHei',sans-serif;background:#fff;min-height:100vh;} @media (min-width:768px){.card.col-12.col-md-3{max-width:280px !important;}}</style>
+    <style>body{margin:0;padding:0;font-family:-apple-system,'Microsoft YaHei',sans-serif;background:#fff;min-height:100vh;overflow-x:auto;} body::-webkit-scrollbar{height:8px;width:8px;} body::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px;} body::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:4px;} body::-webkit-scrollbar-thumb:hover{background:#a1a1a1;} @media (min-width:768px){.card.col-12.col-md-3{max-width:280px !important;}}
+    /* 预览区：移除所有包裹容器的视觉效果 */
+    .container-fluid { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+    .container { max-width: 100% !important; margin: 0 !important; }
+    .card.bg-white.border-0,
+    .card.bg-light.border-0 {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
+                        /* 注释文字：虚线下划线 */
+    .explain {
+      position: relative;
+      border-bottom: 1px dotted #3366cc;
+      cursor: help;
+      color: inherit;
+    }
+    /* 注释 tooltip 对话框（显示在文字下方，自动宽度，文字居中） */
+    .explain::after {
+      content: attr(data-annotation);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 8px;
+      background: #ffffff;
+      border: 1px solid #A2A9B1;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: #202122;
+      line-height: 1.4;
+      white-space: normal;
+      min-width: 40px;
+      max-width: 350px;
+      width: max-content;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease, visibility 0.15s ease;
+      z-index: 1000;
+      pointer-events: none;
+      font-weight: normal;
+    }
+    /* 注释 tooltip 箭头（SVG白色三角形，左右斜边有灰色描边，底部无描边，和方框组成整体） */
+    .explain::before {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 2px;
+      width: 13px;
+      height: 7px;
+      background-image: url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M6.5%200.5%20L12.5%207%20L0.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M6.5%200.5%20L12.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M6.5%200.5%20L0.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease, visibility 0.15s ease;
+      z-index: 1001;
+      pointer-events: none;
+    }
+    /* 悬停时显示 tooltip */
+    .explain:hover::after,
+    .explain:hover::before {
+      opacity: 1;
+      visibility: visible;
+    }
+    /* 靠底部时，tooltip 显示在文字上方 */
+    .explain-top::after {
+      top: auto;
+      bottom: calc(100% + 8px);
+    }
+    .explain-top::before {
+      top: auto;
+      bottom: calc(100% + 2px);
+      background-image: url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200.5%20L12.5%200.5%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
+      background-position: center top;
+    }
+    </style>
     </head><body>${previewCode}
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"><\/script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"><\/script>
@@ -2224,7 +3097,33 @@ function updatePreview(code) {
       setupToggleText('toggle2', 'toggle2-btn');
       setupToggleText('toc-body', 'toc-btn');
     }
-    <\/script>
+        // tooltip 智能定位：默认下方，靠近底部时自动上方
+    document.addEventListener('mouseover', function(e) {
+      var explain = e.target.closest('.explain');
+      if (explain) {
+        var rect = explain.getBoundingClientRect();
+        var viewportHeight = window.innerHeight;
+        var distanceToBottom = viewportHeight - rect.bottom;
+        if (distanceToBottom < 120) {
+          explain.classList.add('explain-top');
+        } else {
+          explain.classList.remove('explain-top');
+        }
+      }
+    });        // tooltip 智能定位：默认下方，靠近底部时自动上方
+    document.addEventListener('mouseover', function(e) {
+      const explain = e.target.closest('.explain');
+      if (explain) {
+        const rect = explain.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const distanceToBottom = viewportHeight - rect.bottom;
+        if (distanceToBottom < 120) {
+          explain.classList.add('explain-top');
+        } else {
+          explain.classList.remove('explain-top');
+        }
+      }
+    });  <\/script>
     </body></html>`;
 
   // iframe加载完成后恢复状态（多次尝试）
@@ -2233,6 +3132,146 @@ function updatePreview(code) {
   };
 
   iframe.srcdoc = html;
+}
+
+// ==================== Cookie 缓存编辑进度 ====================
+const COOKIE_PREFIX = 'wiki_gen_data_';
+const COOKIE_COUNT_KEY = 'wiki_gen_count';
+const COOKIE_VERSION_KEY = 'wiki_gen_version';
+const COOKIE_SAVE_INTERVAL = 2000;
+let lastCookieSaveTime = 0;
+
+function setCookie(name, value, days) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires + ';path=/';
+}
+function getCookie(name) {
+  const nameEQ = name + '=';
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+  }
+  return null;
+}
+function deleteCookie(name) {
+  document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';
+}
+function compressString(str) {
+  try { return btoa(unescape(encodeURIComponent(str))); } catch(e) { return str; }
+}
+function decompressString(str) {
+  try { return decodeURIComponent(escape(atob(str))); } catch(e) { return str; }
+}
+function saveToCookie() {
+  const now = Date.now();
+  if (now - lastCookieSaveTime < COOKIE_SAVE_INTERVAL) return;
+  lastCookieSaveTime = now;
+  try {
+    const dataToSave = JSON.parse(JSON.stringify(data));
+    const jsonStr = JSON.stringify(dataToSave);
+    const compressed = compressString(jsonStr);
+    const oldCount = parseInt(getCookie(COOKIE_COUNT_KEY) || '0');
+    for (let i = 0; i < oldCount; i++) deleteCookie(COOKIE_PREFIX + i);
+    const chunkSize = 3000;
+    const chunks = [];
+    for (let i = 0; i < compressed.length; i += chunkSize) {
+      chunks.push(compressed.substring(i, i + chunkSize));
+    }
+    chunks.forEach((chunk, idx) => { setCookie(COOKIE_PREFIX + idx, chunk, 30); });
+    setCookie(COOKIE_COUNT_KEY, chunks.length.toString(), 30);
+    setCookie(COOKIE_VERSION_KEY, '1', 30);
+    return true;
+  } catch(e) {
+    console.error('保存到 cookie 失败:', e);
+    return false;
+  }
+}
+function loadFromCookie() {
+  try {
+    const count = parseInt(getCookie(COOKIE_COUNT_KEY) || '0');
+    if (count === 0) return null;
+    let compressed = '';
+    for (let i = 0; i < count; i++) {
+      const chunk = getCookie(COOKIE_PREFIX + i);
+      if (!chunk) return null;
+      compressed += chunk;
+    }
+    const jsonStr = decompressString(compressed);
+    return JSON.parse(jsonStr);
+  } catch(e) {
+    console.error('从 cookie 读取失败:', e);
+    return null;
+  }
+}
+function clearCookieCache() {
+  const count = parseInt(getCookie(COOKIE_COUNT_KEY) || '0');
+  for (let i = 0; i < count; i++) deleteCookie(COOKIE_PREFIX + i);
+  deleteCookie(COOKIE_COUNT_KEY);
+  deleteCookie(COOKIE_VERSION_KEY);
+  showToast('🗑️ 缓存已清除');
+}
+// ==================== localStorage 自动保存（推荐，容量更大） ====================
+const LS_KEY = 'wikiGeneratorData';
+const LS_TIME_KEY = 'wikiGeneratorLastSave';
+
+function saveToLocalStorage() {
+  try {
+    const dataToSave = JSON.parse(JSON.stringify(data));
+    const jsonStr = JSON.stringify(dataToSave);
+    localStorage.setItem(LS_KEY, jsonStr);
+    localStorage.setItem(LS_TIME_KEY, Date.now().toString());
+    return true;
+  } catch(e) {
+    console.error('保存到 localStorage 失败:', e);
+    showToast('⚠️ 自动保存失败（存储空间可能已满）');
+    return false;
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const jsonStr = localStorage.getItem(LS_KEY);
+    if (!jsonStr) return null;
+    return JSON.parse(jsonStr);
+  } catch(e) {
+    console.error('从 localStorage 读取失败:', e);
+    return null;
+  }
+}
+
+function getLastSaveTime() {
+  try {
+    const ts = localStorage.getItem(LS_TIME_KEY);
+    if (!ts) return null;
+    const date = new Date(parseInt(ts));
+    return date.toLocaleString('zh-CN');
+  } catch(e) {
+    return null;
+  }
+}
+
+function clearLocalStorageCache() {
+  try {
+    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LS_TIME_KEY);
+    showToast('🗑️ 本地缓存已清除');
+    updateCacheStatus();
+  } catch(e) {
+    showToast('⚠️ 清除缓存失败');
+  }
+}
+
+function updateCacheStatus() {
+  const el = document.getElementById('cache-status');
+  if (!el) return;
+  const lastSave = getLastSaveTime();
+  if (lastSave) {
+    el.innerHTML = '💾 最后保存：' + lastSave;
+  } else {
+    el.innerHTML = '💾 暂无保存记录';
+  }
 }
 
 // ==================== 统一更新（防抖） ====================
@@ -2246,6 +3285,9 @@ function updateAll() {
     const code = generateCode();
     document.getElementById('code-output').value = code;
     updatePreview(code);
+    // 自动保存编辑进度到 localStorage（容量更大，更可靠）
+    saveToLocalStorage();
+    updateCacheStatus();
   }, 300);
 }
 
@@ -2270,6 +3312,8 @@ function exportFullHtml() {
   // 导出完整HTML时，把 container 替换为 container-fluid，让内容占满宽度
   toyhouseCode = toyhouseCode.replace(/class="container /g, 'class="container-fluid ');
   toyhouseCode = toyhouseCode.replace(/class="container"/g, 'class="container-fluid"');
+  // 导出完整HTML时，把浅灰色背景 bg-light 替换为白色 bg-white，避免整个页面被框在浅灰色底框里
+  toyhouseCode = toyhouseCode.replace(/class="card bg-light border-0"/g, 'class="card bg-white border-0"');
   const pageTitle = data.pageTitle ? data.pageTitle.replace(/<[^>]*>/g, '') : '角色百科页面';
 
   const fullHtml = `<!DOCTYPE html>
@@ -2287,7 +3331,18 @@ function exportFullHtml() {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
       margin: 0;
     }
+    /* 移除所有包裹容器的视觉效果，无需模拟Toyhouse页面 */
     .container-fluid { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+    .container { max-width: 100% !important; margin: 0 !important; }
+    /* 外层卡片容器：透明背景，无边框无阴影 */
+    .card.bg-white.border-0,
+    .card.bg-light.border-0 {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+    }
+    .card.col-12.col-md-3 { max-width: 280px !important; }
     .card.col-12.col-md-3 { max-width: 280px !important; }
     /* 手机端：信息框占满全屏，不浮动，避免和文字交错 */
     @media (max-width: 767px) {
@@ -2301,6 +3356,77 @@ function exportFullHtml() {
     }
     a { color: #0645ad; text-decoration: none; }
     a:hover { text-decoration: underline; }
+                        /* 注释文字：虚线下划线 */
+    .explain {
+      position: relative;
+      border-bottom: 1px dotted #3366cc;
+      cursor: help;
+      color: inherit;
+    }
+    /* 注释 tooltip 对话框（显示在文字下方，自动宽度，文字居中） */
+    .explain::after {
+      content: attr(data-annotation);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 8px;
+      background: #ffffff;
+      border: 1px solid #A2A9B1;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: #202122;
+      line-height: 1.4;
+      white-space: normal;
+      min-width: 40px;
+      max-width: 350px;
+      width: max-content;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease, visibility 0.15s ease;
+      z-index: 1000;
+      pointer-events: none;
+      font-weight: normal;
+    }
+    /* 注释 tooltip 箭头（SVG白色三角形，左右斜边有灰色描边，底部无描边，和方框组成整体） */
+    .explain::before {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 2px;
+      width: 13px;
+      height: 7px;
+      background-image: url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M6.5%200.5%20L12.5%207%20L0.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M6.5%200.5%20L12.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M6.5%200.5%20L0.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease, visibility 0.15s ease;
+      z-index: 1001;
+      pointer-events: none;
+    }
+    /* 悬停时显示 tooltip */
+    .explain:hover::after,
+    .explain:hover::before {
+      opacity: 1;
+      visibility: visible;
+    }
+    /* 靠底部时，tooltip 显示在文字上方 */
+    .explain-top::after {
+      top: auto;
+      bottom: calc(100% + 8px);
+    }
+    .explain-top::before {
+      top: auto;
+      bottom: calc(100% + 2px);
+      background-image: url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200.5%20L12.5%200.5%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
+      background-position: center top;
+    }
   </style>
 </head>
 <body>
@@ -2404,6 +3530,27 @@ function toggleSidebar() {
     settings.style.display = 'none';
     expandBtn.style.display = 'block';
   }
+}
+// 侧边栏宽度切换（窄/中/宽三档）
+const SIDEBAR_WIDTHS = { narrow: '320px', medium: '440px', wide: '580px' };
+function setSidebarWidth(width) {
+  const settings = document.getElementById('settings');
+  if (!SIDEBAR_WIDTHS[width]) return;
+  settings.style.width = SIDEBAR_WIDTHS[width];
+  settings.style.minWidth = SIDEBAR_WIDTHS[width];
+  // 更新按钮激活状态
+  document.querySelectorAll('.width-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.width === width);
+  });
+  // 保存到 localStorage
+  try { localStorage.setItem('sidebarWidth', width); } catch(e) {}
+}
+// 初始化侧边栏宽度
+function initSidebarWidth() {
+  let saved = 'narrow';
+  try { saved = localStorage.getItem('sidebarWidth') || 'narrow'; } catch(e) {}
+  if (!SIDEBAR_WIDTHS[saved]) saved = 'narrow';
+  setSidebarWidth(saved);
 }
 
 // ==================== 工具函数 ====================
