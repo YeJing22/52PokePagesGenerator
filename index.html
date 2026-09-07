@@ -56,7 +56,7 @@ summary:hover{background:#eaeaea}
 .rich-editor .explain::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;width:13px;height:7px;background-image:url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M6.5%200.5%20L12.5%207%20L0.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M6.5%200.5%20L12.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M6.5%200.5%20L0.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center bottom;opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:10000;pointer-events:none;}
 .rich-editor .explain:hover::after,.rich-editor .explain:hover::before{opacity:1;visibility:visible;}
 .rich-editor .explain-top::after{top:auto;bottom:calc(100% + 8px);}
-.rich-editor .explain-top::before{top:auto;bottom:calc(100% + 2px);background-image:url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200.5%20L12.5%200.5%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");background-position:center top;}
+.rich-editor .explain-top::before{top:auto;bottom:calc(100% + 2px);background-image:url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200%20L12.5%200%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");background-position:center top;}
 .rt-toolbar .sep{width:1px;background:#ccc;margin:2px 4px}
 .rich-editor{min-height:65px;padding:8px 10px;font-size:13px;line-height:1.7;outline:none;background:#fff;overflow-x:auto;overflow-y:auto;max-width:100%}
 .rich-editor::-webkit-scrollbar{height:8px;width:8px}
@@ -563,6 +563,8 @@ let data = {
     {label:'年龄', value:'Lorem'},
     {label:'职业', value:'Lorem ipsum dolor'},
     {label:'出场世代', value:'Lorem'},
+    {label:'出场游戏', value:'Lorem'},
+    {label:'擅长属性', value:'', hasTypeSelector:true},
     {label:'家乡', value:'Lorem ipsum'},
     {label:'家乡所在地', value:'Lorem'}
   ],
@@ -1452,6 +1454,27 @@ function renderInfoboxRows() {
               <option value="2.5">2.5</option>
               <option value="3">3.0</option>
             </select>
+            ${row.hasTypeSelector ? `<select onchange="insertTypeBox(this.value, '${valueId}'); this.value='';" title="插入属性框" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+              <option value="">选择属性</option>
+              <option value="一般">一般</option>
+              <option value="格斗">格斗</option>
+              <option value="飞行">飞行</option>
+              <option value="毒">毒</option>
+              <option value="地面">地面</option>
+              <option value="岩石">岩石</option>
+              <option value="虫">虫</option>
+              <option value="幽灵">幽灵</option>
+              <option value="钢">钢</option>
+              <option value="火">火</option>
+              <option value="水">水</option>
+              <option value="草">草</option>
+              <option value="电">电</option>
+              <option value="超能力">超能力</option>
+              <option value="冰">冰</option>
+              <option value="龙">龙</option>
+              <option value="恶">恶</option>
+              <option value="妖精">妖精</option>
+            </select>` : ''}
             <button onclick="rtLink('${valueId}')" title="超链接">🔗</button>            <button onclick="rtClearFormat('${valueId}')" title="清除格式">✕</button>
 
           </div>
@@ -2455,6 +2478,52 @@ function rtLineHeight(value, arg) {
     showToast('✨ 行距已设置为 ' + value);
   }
 }
+// ==================== 宝可梦属性框插入 ====================
+const POKEMON_TYPES = [
+  { name: '一般', color: '#9fa19f', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/1.png' },
+  { name: '格斗', color: '#ff8000', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/2.png' },
+  { name: '飞行', color: '#81b9ef', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/3.png' },
+  { name: '毒', color: '#9141cb', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/4.png' },
+  { name: '地面', color: '#915121', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/5.png' },
+  { name: '岩石', color: '#afa981', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/6.png' },
+  { name: '虫', color: '#91a119', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/7.png' },
+  { name: '幽灵', color: '#704170', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/8.png' },
+  { name: '钢', color: '#60a1b8', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/9.png' },
+  { name: '火', color: '#e62829', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/10.png' },
+  { name: '水', color: '#2980ef', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/11.png' },
+  { name: '草', color: '#3fa129', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/12.png' },
+  { name: '电', color: '#fac000', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/13.png' },
+  { name: '超能力', color: '#ef4179', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/14.png' },
+  { name: '冰', color: '#3fd8ff', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/15.png' },
+  { name: '龙', color: '#5060e1', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/16.png' },
+  { name: '恶', color: '#50413f', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/17.png' },
+  { name: '妖精', color: '#ef70ef', icon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/18.png' }
+];
+
+function insertTypeBox(typeName, arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { showToast('请先点击编辑区域'); return; }
+  editor.focus();
+  
+  const type = POKEMON_TYPES.find(t => t.name === typeName);
+  if (!type) { showToast('未知属性'); return; }
+  
+  // 根据属性名动态调整宽度（"超能力"有三个汉字，需要更宽）
+  const boxWidth = typeName === '超能力' ? '72px' : '64px';
+  
+  // 生成带内联样式的 HTML（完全内联，不依赖外部 CSS，Toyhouse 和导出 HTML 都能正常显示）
+  const html = '<span style="position:relative;display:inline-block;overflow:hidden;margin:0 1px;height:20px;border-radius:10px;text-align:center;vertical-align:middle;white-space:nowrap;font-size:14px;line-height:20px;padding-left:22px;width:' + boxWidth + ';background-color:' + type.color + ';">' +
+    '<img src="' + type.icon + '" alt="' + type.name + '" style="position:absolute;top:0;left:3px;width:20px;height:20px;object-fit:contain;">' +
+    '<span style="color:#fff;">' + type.name + '</span>' +
+  '</span>';
+  
+  // 插入到编辑器光标位置
+  document.execCommand('insertHTML', false, html);
+  
+  syncEditorData(editor);
+  updateAll();
+  showToast('✨ 已插入' + type.name + '属性框');
+}
 
 // 彻底清理元素中所有内联样式和格式标签（保留表格/剧透提示等复杂元素）
 function cleanAllStyles(root) {
@@ -3054,7 +3123,7 @@ function updatePreview(code) {
     .explain-top::before {
       top: auto;
       bottom: calc(100% + 2px);
-      background-image: url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200.5%20L12.5%200.5%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200%20L12.5%200%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
       background-position: center top;
     }
     </style>
@@ -3424,7 +3493,7 @@ function exportFullHtml() {
     .explain-top::before {
       top: auto;
       bottom: calc(100% + 2px);
-      background-image: url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200.5%20L12.5%200.5%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200.5%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200%20L12.5%200%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
       background-position: center top;
     }
   </style>
@@ -3446,6 +3515,46 @@ ${toyhouseCode}
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
+    });
+    // 折叠开关文字切换（根据状态显示"显示"或"折叠"）
+    function setupToggleText(toggleId, btnId) {
+      var toggle = document.getElementById(toggleId);
+      var btn = document.getElementById(btnId);
+      if (!toggle || !btn) return;
+      function updateText() {
+        btn.textContent = toggle.classList.contains('show') ? '[折叠]' : '[显示]';
+      }
+      updateText();
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.attributeName === 'class') {
+            updateText();
+          }
+        });
+      });
+      observer.observe(toggle, {attributes: true, attributeFilter: ['class']});
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      setupToggleText('toggle2', 'toggle2-btn');
+      setupToggleText('toc-body', 'toc-btn');
+    });
+    if (document.readyState !== 'loading') {
+      setupToggleText('toggle2', 'toggle2-btn');
+      setupToggleText('toc-body', 'toc-btn');
+    }
+    // tooltip 智能定位：默认下方，靠近底部时自动上方
+    document.addEventListener('mouseover', function(e) {
+      var explain = e.target.closest('.explain');
+      if (explain) {
+        var rect = explain.getBoundingClientRect();
+        var viewportHeight = window.innerHeight;
+        var distanceToBottom = viewportHeight - rect.bottom;
+        if (distanceToBottom < 120) {
+          explain.classList.add('explain-top');
+        } else {
+          explain.classList.remove('explain-top');
+        }
+      }
     });
   <\/script>
 </body>
