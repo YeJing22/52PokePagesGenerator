@@ -50,6 +50,13 @@ summary:hover{background:#eaeaea}
 .rt-toolbar button{padding:3px 9px;border:1px solid #ccc;border-radius:3px;background:#fff;cursor:pointer;font-size:12px;min-width:28px}
 .rt-toolbar button:hover{background:#e8e8e8}
 .rt-toolbar button:active{background:#ddd}
+
+/* 无序列表样式 - 所有层级都使用实心圆点 */
+.rich-editor ul, .rich-editor ul ul, .rich-editor ul ul ul{
+  list-style-type: disc !important;
+}
+.rich-editor ul.no-indent{list-style-position:inside;padding-left:0;margin-left:0;}
+.rich-editor ul.indent{list-style-position:outside;padding-left:2em;margin-left:0;}
 /* 编辑器里的注释文字样式 */
 .rich-editor .explain{position:relative;border-bottom:1px dotted #3366cc;cursor:help;color:inherit;}
 
@@ -355,7 +362,7 @@ summary:hover{background:#eaeaea}
   <option value="12px">较大 12px</option>
   <option value="16px">宽松 16px</option>
   <option value="24px">很宽松 24px</option>
-</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtLink()" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat()" title="清除格式">✕ 清除</button>
+</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtIndent()" title="增加缩进">→ 缩进</button><button onclick="rtOutdent()" title="减少缩进">← 取消</button><button onclick="rtLink()" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat()" title="清除格式">✕ 清除</button>
           
         </div>
         <div class="rich-editor" id="summary-editor" contenteditable="true" data-placeholder="在此输入角色简介…支持加粗、斜体、超链接" oninput="updateData()"></div>
@@ -457,7 +464,7 @@ summary:hover{background:#eaeaea}
   <option value="12px">较大 12px</option>
   <option value="16px">宽松 16px</option>
   <option value="24px">很宽松 24px</option>
-</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtLink('detail-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('detail-editor')" title="清除格式">✕ 清除</button>
+</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtIndent()" title="增加缩进">→ 缩进</button><button onclick="rtOutdent()" title="减少缩进">← 取消</button><button onclick="rtLink('detail-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('detail-editor')" title="清除格式">✕ 清除</button>
           
         </div>
         <div class="rich-editor" id="detail-editor" contenteditable="true" data-placeholder="在此输入细节内容…" oninput="data.detailChapter.content=this.innerHTML;updateAll()"></div>
@@ -519,11 +526,36 @@ summary:hover{background:#eaeaea}
   <option value="12px">较大 12px</option>
   <option value="16px">宽松 16px</option>
   <option value="24px">很宽松 24px</option>
-</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtLink('nameorigin-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('nameorigin-editor')" title="清除格式">✕ 清除</button>
+</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtIndent()" title="增加缩进">→ 缩进</button><button onclick="rtOutdent()" title="减少缩进">← 取消</button><button onclick="rtLink('nameorigin-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('nameorigin-editor')" title="清除格式">✕ 清除</button>
           
         </div>
         <div class="rich-editor" id="nameorigin-editor" contenteditable="true" data-placeholder="在此输入名字来源内容…" oninput="data.nameOriginChapter.content=this.innerHTML;updateAll()"></div>
       </div>
+    </div>
+  </details>
+
+  <!-- 画廊 -->
+  <details id="gallery-section">
+    <summary style="display:flex;justify-content:space-between;align-items:center;">
+      <span>🏞️ 画廊</span>
+      <span>
+        <button class="btn-move" onclick="moveModule('gallery', -1)" title="上移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
+        <button class="btn-move" onclick="moveModule('gallery', 1)" title="下移" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
+        <button class="btn-del" onclick="toggleModule('gallery')" title="删除此模块" style="padding:2px 8px;font-size:11px;">✕ 删除</button>
+      </span>
+    </summary>
+    <div class="dc">
+      <div class="infobox-row" style="background:#f8f9fa;padding:8px;border-radius:6px;margin-bottom:10px;">
+        <div class="fg"><label id="gallery-image-height-label">图片高度 (300px)</label><input type="range" min="50" max="600" value="300" oninput="data.gallery.imageHeight=parseInt(this.value);document.getElementById('gallery-image-height-label').textContent='图片高度 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+        <div class="fg"><label>网格列数</label><select onchange="data.gallery.gridColumns=parseInt(this.value);updateAll()" style="width:100%;padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+          <option value="2">2列</option>
+          <option value="3" selected>3列</option>
+          <option value="4">4列</option>
+        </select></div>
+        <div class="fg"><label id="gallery-grid-gap-label">图片间距 (4px)</label><input type="range" min="0" max="20" value="4" oninput="data.gallery.gridGap=parseInt(this.value);document.getElementById('gallery-grid-gap-label').textContent='图片间距 ('+this.value+'px)';updateAll()" style="width:100%"></div>
+      </div>
+      <div id="gallery-categories-list"></div>
+      <button class="btn-add" onclick="addGalleryCategory()">+ 添加大分类</button>
     </div>
   </details>
 
@@ -617,7 +649,37 @@ let data = {
   nameOriginChapter: {title:'名字来源', content:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', images:[]},
   nameOriginEnabled: true,
   // 模块显示顺序
-  moduleOrder: ['chapters', 'relationships', 'pokemon', 'detail', 'nameOrigin', 'footerCats'],
+  moduleOrder: ['chapters', 'relationships', 'pokemon', 'detail', 'nameOrigin', 'gallery', 'footerCats'],
+  // 画廊
+  galleryEnabled: true,
+  gallery: {
+    imageWidth: 200,
+    imageHeight: 300,
+    borderRadius: 10,
+    columns: 3,
+    gridColumns: 3,
+    gridGap: 4,
+    categories: [
+      {
+        title: '人物绘图',
+        width: 100,
+        subcategories: [
+          {
+            title: '《宝可梦》系列',
+            images: [
+              {url: '', caption: '图片说明1', scale: 100, colSpan: 3, rowSpan: 1, borderRadius: 10, offsetX: 0, offsetY: 0},
+              {url: '', caption: '图片说明2', scale: 100, colSpan: 1, rowSpan: 1, borderRadius: 10, offsetX: 0, offsetY: 0},
+              {url: '', caption: '图片说明3', scale: 100, colSpan: 1, rowSpan: 1, borderRadius: 10, offsetX: 0, offsetY: 0},
+              {url: '', caption: '图片说明4', scale: 100, colSpan: 1, rowSpan: 1, borderRadius: 10, offsetX: 0, offsetY: 0},
+              {url: '', caption: '图片说明5', scale: 100, colSpan: 1, rowSpan: 1, borderRadius: 10, offsetX: 0, offsetY: 0},
+              {url: '', caption: '图片说明6', scale: 100, colSpan: 1, rowSpan: 1, borderRadius: 10, offsetX: 0, offsetY: 0},
+              {url: '', caption: '图片说明7', scale: 100, colSpan: 1, rowSpan: 1, borderRadius: 10}
+            ]
+          }
+        ]
+      }
+    ]
+  },
   footerCategories: ['分类1','分类2','分类3'],
   footerCatsEnabled: true,
   // 关系
@@ -1336,7 +1398,7 @@ function init() {
   renderInfoboxRows();
   renderChapters();
   renderFooterCats();
-  renderRelationships();
+  renderRelationships(); renderGallery();
   renderPokemonParty();
   updateModuleVisibility();
   // 按照 moduleOrder 排列编辑区域的模块顺序
@@ -1555,6 +1617,7 @@ const MODULE_MAP = {
   pokemon: {sectionId:'pkm-section', label:'宝可梦队伍', enabledKey:'pokemonEnabled'},
   detail: {sectionId:'detail-section', label:'细节', enabledKey:'detailEnabled'},
   nameOrigin: {sectionId:'nameorigin-section', label:'名字来源', enabledKey:'nameOriginEnabled'},
+  gallery: {sectionId:'gallery-section', label:'画廊', enabledKey:'galleryEnabled'},
   footerCats: {sectionId:'footer-section', label:'页脚分类', enabledKey:'footerCatsEnabled'}
 };
 
@@ -1761,6 +1824,177 @@ function delFooterCat(i) {
 }
 
 // ==================== 关系 ====================
+// ==================== 画廊 ====================
+function renderGallery() {
+  const container = document.getElementById('gallery-categories-list');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  data.gallery.categories.forEach((cat, catIdx) => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'infobox-row';
+    catDiv.style.marginBottom = '10px';
+    catDiv.style.border = '1px solid #ddd';
+    catDiv.style.borderRadius = '6px';
+    catDiv.style.padding = '8px';
+    
+    let html = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong>大分类 ${catIdx + 1}</strong>
+        <span>
+          <button onclick="moveGalleryCategory(${catIdx}, -1)" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↑</button>
+          <button onclick="moveGalleryCategory(${catIdx}, 1)" style="padding:2px 6px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;margin-right:2px;">↓</button>
+          <button onclick="delGalleryCategory(${catIdx})" style="padding:2px 8px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">✕ 删除</button>
+        </span>
+      </div>
+      <div class="fg"><label>大分类标题</label><input type="text" value="${escAttr(cat.title)}" oninput="data.gallery.categories[${catIdx}].title=this.value;updateAll()" style="width:100%;padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;"></div>
+      <div class="fg" style="margin-bottom:8px;"><label id="gallery-width-label-${catIdx}" style="font-size:11px;">底框宽度 (${cat.width || 100}%)</label><input type="range" min="30" max="100" value="${cat.width || 100}" oninput="data.gallery.categories[${catIdx}].width=parseInt(this.value);document.getElementById('gallery-width-label-${catIdx}').textContent='底框宽度 ('+this.value+'%)';updateAll()" style="width:100%;"></div>
+      <div id="gallery-subcategories-${catIdx}"></div>
+      <button onclick="addGallerySubcategory(${catIdx})" style="margin-top:6px;padding:4px 10px;font-size:12px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#f0f0f0;">+ 添加子分类</button>
+    `;
+    catDiv.innerHTML = html;
+    container.appendChild(catDiv);
+    
+    // 渲染子分类
+    const subContainer = catDiv.querySelector(`#gallery-subcategories-${catIdx}`);
+    cat.subcategories.forEach((sub, subIdx) => {
+      const subDiv = document.createElement('div');
+      subDiv.style.marginTop = '8px';
+      subDiv.style.marginLeft = '10px';
+      subDiv.style.padding = '8px';
+      subDiv.style.border = '1px dashed #ccc';
+      subDiv.style.borderRadius = '4px';
+      
+      let subHtml = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <strong style="font-size:12px;">子分类 ${subIdx + 1}</strong>
+          <span>
+            <button onclick="moveGallerySubcategory(${catIdx}, ${subIdx}, -1)" style="padding:1px 5px;font-size:10px;cursor:pointer;border:1px solid #ccc;border-radius:3px;background:#fff;margin-right:2px;">↑</button>
+            <button onclick="moveGallerySubcategory(${catIdx}, ${subIdx}, 1)" style="padding:1px 5px;font-size:10px;cursor:pointer;border:1px solid #ccc;border-radius:3px;background:#fff;margin-right:2px;">↓</button>
+            <button onclick="delGallerySubcategory(${catIdx}, ${subIdx})" style="padding:1px 6px;font-size:10px;cursor:pointer;border:1px solid #ccc;border-radius:3px;background:#fff;">✕</button>
+          </span>
+        </div>
+        <div class="fg"><label style="font-size:11px;">子分类标题</label><input type="text" value="${escAttr(sub.title)}" oninput="data.gallery.categories[${catIdx}].subcategories[${subIdx}].title=this.value;updateAll()" style="width:100%;padding:4px 6px;border:1px solid #ccc;border-radius:3px;font-size:12px;"></div>
+        <div id="gallery-images-${catIdx}-${subIdx}"></div>
+        <button onclick="addGalleryImage(${catIdx}, ${subIdx})" style="margin-top:4px;padding:3px 8px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:3px;background:#f5f5f5;">+ 添加图片</button>
+      `;
+      subDiv.innerHTML = subHtml;
+      subContainer.appendChild(subDiv);
+      
+      // 渲染图片
+      const imgContainer = subDiv.querySelector(`#gallery-images-${catIdx}-${subIdx}`);
+      sub.images.forEach((img, imgIdx) => {
+        const imgDiv = document.createElement('div');
+        imgDiv.style.marginTop = '6px';
+        imgDiv.style.padding = '6px';
+        imgDiv.style.border = '1px solid #eee';
+        imgDiv.style.borderRadius = '3px';
+        imgDiv.style.background = '#fafafa';
+        
+        const captionId = `gallery-caption-${catIdx}-${subIdx}-${imgIdx}`;
+        let imgHtml = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:11px;font-weight:bold;">图片 ${imgIdx + 1}</span>
+            <span>
+              <button onclick="moveGalleryImage(${catIdx}, ${subIdx}, ${imgIdx}, -1)" style="padding:1px 4px;font-size:9px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#fff;margin-right:1px;">↑</button>
+              <button onclick="moveGalleryImage(${catIdx}, ${subIdx}, ${imgIdx}, 1)" style="padding:1px 4px;font-size:9px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#fff;margin-right:1px;">↓</button>
+              <button onclick="delGalleryImage(${catIdx}, ${subIdx}, ${imgIdx})" style="padding:1px 5px;font-size:9px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#fff;">✕</button>
+            </span>
+          </div>
+          <div class="fg" style="margin-bottom:4px;"><label style="font-size:10px;">图片 URL</label><input type="url" value="${escAttr(img.url)}" oninput="data.gallery.categories[${catIdx}].subcategories[${subIdx}].images[${imgIdx}].url=this.value;updateAll()" placeholder="https://..." style="width:100%;padding:3px 5px;border:1px solid #ccc;border-radius:3px;font-size:11px;"></div>
+          <div class="fg" style="margin-bottom:4px;"><label id="gallery-scale-label-${catIdx}-${subIdx}-${imgIdx}" style="font-size:10px;">图片缩放 (${img.scale || 100}%)</label><input type="range" min="10" max="300" value="${img.scale || 100}" oninput="data.gallery.categories[${catIdx}].subcategories[${subIdx}].images[${imgIdx}].scale=parseInt(this.value);document.getElementById('gallery-scale-label-${catIdx}-${subIdx}-${imgIdx}').textContent='图片缩放 ('+this.value+'%)';updateAll()" style="width:100%;"></div>
+          <div class="fg" style="margin-bottom:4px;"><label id="gallery-radius-label-${catIdx}-${subIdx}-${imgIdx}" style="font-size:10px;">图片圆角 (${img.borderRadius || 10}px)</label><input type="range" min="0" max="200" value="${img.borderRadius || 10}" oninput="data.gallery.categories[${catIdx}].subcategories[${subIdx}].images[${imgIdx}].borderRadius=parseInt(this.value);document.getElementById('gallery-radius-label-${catIdx}-${subIdx}-${imgIdx}').textContent='图片圆角 ('+this.value+'px)';updateAll()" style="width:100%;"></div>
+          <div style="display:flex;gap:4px;margin-bottom:4px;">
+            <div class="fg" style="flex:1;margin-bottom:0;"><label id="gallery-offset-x-label-${catIdx}-${subIdx}-${imgIdx}" style="font-size:10px;">水平位移 (${img.offsetX || 0}px)</label><input type="range" min="-100" max="100" value="${img.offsetX || 0}" oninput="data.gallery.categories[${catIdx}].subcategories[${subIdx}].images[${imgIdx}].offsetX=parseInt(this.value);document.getElementById('gallery-offset-x-label-${catIdx}-${subIdx}-${imgIdx}').textContent='水平位移 ('+this.value+'px)';updateAll()" style="width:100%;"></div>
+            <div class="fg" style="flex:1;margin-bottom:0;"><label id="gallery-offset-y-label-${catIdx}-${subIdx}-${imgIdx}" style="font-size:10px;">垂直位移 (${img.offsetY || 0}px)</label><input type="range" min="-100" max="100" value="${img.offsetY || 0}" oninput="data.gallery.categories[${catIdx}].subcategories[${subIdx}].images[${imgIdx}].offsetY=parseInt(this.value);document.getElementById('gallery-offset-y-label-${catIdx}-${subIdx}-${imgIdx}').textContent='垂直位移 ('+this.value+'px)';updateAll()" style="width:100%;"></div>
+          </div>
+          <div style="display:flex;gap:4px;margin-bottom:4px;">
+            <div class="fg" style="flex:1;margin-bottom:0;"><label style="font-size:10px;">占据列数</label><select onchange="data.gallery.categories[${catIdx}].subcategories[${subIdx}].images[${imgIdx}].colSpan=parseInt(this.value);updateAll()" style="width:100%;padding:2px 4px;border:1px solid #ccc;border-radius:3px;font-size:10px;">
+              <option value="1" ${(img.colSpan || 1) == 1 ? 'selected' : ''}>1列</option>
+              <option value="2" ${(img.colSpan || 1) == 2 ? 'selected' : ''}>2列</option>
+              <option value="3" ${(img.colSpan || 1) == 3 ? 'selected' : ''}>3列</option>
+              <option value="4" ${(img.colSpan || 1) == 4 ? 'selected' : ''}>4列</option>
+            </select></div>
+            <div class="fg" style="flex:1;margin-bottom:0;"><label style="font-size:10px;">占据行数</label><select onchange="data.gallery.categories[${catIdx}].subcategories[${subIdx}].images[${imgIdx}].rowSpan=parseInt(this.value);updateAll()" style="width:100%;padding:2px 4px;border:1px solid #ccc;border-radius:3px;font-size:10px;">
+              <option value="1" ${(img.rowSpan || 1) == 1 ? 'selected' : ''}>1行</option>
+              <option value="2" ${(img.rowSpan || 1) == 2 ? 'selected' : ''}>2行</option>
+              <option value="3" ${(img.rowSpan || 1) == 3 ? 'selected' : ''}>3行</option>
+            </select></div>
+          </div>
+          <div class="fg" style="margin-bottom:0;"><label style="font-size:10px;">说明文字（富文本）</label>
+            <div class="rt-wrap rt-compact">
+              <div class="rt-toolbar">
+                <button onclick="rtCmd('bold','${captionId}')"><b>B</b></button>
+                <button onclick="rtCmd('italic','${captionId}')"><i>I</i></button>
+                <button onclick="rtLink('${captionId}')">🔗</button>
+              </div>
+              <div class="rich-editor" id="${captionId}" contenteditable="true" data-placeholder="说明文字…" oninput="data.gallery.categories[${catIdx}].subcategories[${subIdx}].images[${imgIdx}].caption=this.innerHTML;updateAll()" style="min-height:30px;font-size:11px;">${img.caption}</div>
+            </div>
+          </div>
+        `;
+        imgDiv.innerHTML = imgHtml;
+        imgContainer.appendChild(imgDiv);
+      });
+    });
+  });
+  
+  addColorButtonToAll();
+  addCleanButtonToToolbars();
+}
+
+function addGalleryCategory() {
+  data.gallery.categories.push({title: '新分类', width: 100, subcategories: []});
+  renderGallery();
+  updateAll();
+}
+function delGalleryCategory(i) {
+  data.gallery.categories.splice(i, 1);
+  renderGallery();
+  updateAll();
+}
+function moveGalleryCategory(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= data.gallery.categories.length) return;
+  [data.gallery.categories[i], data.gallery.categories[j]] = [data.gallery.categories[j], data.gallery.categories[i]];
+  renderGallery();
+  updateAll();
+}
+function addGallerySubcategory(catIdx) {
+  data.gallery.categories[catIdx].subcategories.push({title: '新子分类', images: []});
+  renderGallery();
+  updateAll();
+}
+function delGallerySubcategory(catIdx, subIdx) {
+  data.gallery.categories[catIdx].subcategories.splice(subIdx, 1);
+  renderGallery();
+  updateAll();
+}
+function moveGallerySubcategory(catIdx, subIdx, dir) {
+  const j = subIdx + dir;
+  if (j < 0 || j >= data.gallery.categories[catIdx].subcategories.length) return;
+  [data.gallery.categories[catIdx].subcategories[subIdx], data.gallery.categories[catIdx].subcategories[j]] = [data.gallery.categories[catIdx].subcategories[j], data.gallery.categories[catIdx].subcategories[subIdx]];
+  renderGallery();
+  updateAll();
+}
+function addGalleryImage(catIdx, subIdx) {
+  data.gallery.categories[catIdx].subcategories[subIdx].images.push({url: '', caption: '说明文字', scale: 100, colSpan: 1, rowSpan: 1, borderRadius: 10, offsetX: 0, offsetY: 0});
+  renderGallery();
+  updateAll();
+}
+function delGalleryImage(catIdx, subIdx, imgIdx) {
+  data.gallery.categories[catIdx].subcategories[subIdx].images.splice(imgIdx, 1);
+  renderGallery();
+  updateAll();
+}
+function moveGalleryImage(catIdx, subIdx, imgIdx, dir) {
+  const images = data.gallery.categories[catIdx].subcategories[subIdx].images;
+  const j = imgIdx + dir;
+  if (j < 0 || j >= images.length) return;
+  [images[imgIdx], images[j]] = [images[j], images[imgIdx]];
+  renderGallery();
+  updateAll();
+}
+
 function renderRelationships() {
   const container = document.getElementById('relationships-list');
   container.innerHTML = '';
@@ -1801,12 +2035,12 @@ function renderRelationships() {
 }
 function addRelationship() {
   data.relationships.push({name:'新角色', desc:'关系描述…'});
-  renderRelationships();
+  renderRelationships(); renderGallery();
   updateAll();
 }
 function delRelationship(i) {
   data.relationships.splice(i, 1);
-  renderRelationships();
+  renderRelationships(); renderGallery();
   updateAll();
 }
 
@@ -2305,6 +2539,28 @@ function syncEditorData(editor) {
   else if (id === 'rt-image-caption') data.imageCaption = editor.innerHTML;
   else if (id === 'nameorigin-editor') data.nameOriginChapter.content = editor.innerHTML;
   else if (id === 'detail-editor') data.detailChapter.content = editor.innerHTML;
+  else if (id.startsWith('rel-desc-')) {
+    // 关系模块：rel-desc-{i} 或 rel-desc-{i}-name
+    const parts = id.replace('rel-desc-', '').split('-');
+    const idx = parseInt(parts[0]);
+    if (parts.length > 1 && parts[1] === 'name') {
+      data.relationships[idx].name = editor.innerHTML;
+    } else {
+      data.relationships[idx].desc = editor.innerHTML;
+    }
+  }
+  else if (id.startsWith('gallery-caption-')) {
+    // 画廊模块：gallery-caption-{catIdx}-{subIdx}-{imgIdx}
+    const parts = id.replace('gallery-caption-', '').split('-');
+    const catIdx = parseInt(parts[0]);
+    const subIdx = parseInt(parts[1]);
+    const imgIdx = parseInt(parts[2]);
+    if (data.gallery && data.gallery.categories[catIdx] && 
+        data.gallery.categories[catIdx].subcategories[subIdx] &&
+        data.gallery.categories[catIdx].subcategories[subIdx].images[imgIdx]) {
+      data.gallery.categories[catIdx].subcategories[subIdx].images[imgIdx].caption = editor.innerHTML;
+    }
+  }
 }
 // 解析工具栏参数：数字=章节索引，字符串=编辑器ID
 function resolveEditor(arg) {
@@ -2383,6 +2639,24 @@ function rtRuby(arg) {
   selection.removeAllRanges();
   selection.addRange(newRange);
   
+  syncEditorData(editor);
+  updateAll();
+}
+// 增加缩进
+function rtIndent(arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { alert('请先点击编辑区域'); return; }
+  editor.focus();
+  document.execCommand('indent', false, null);
+  syncEditorData(editor);
+  updateAll();
+}
+// 减少缩进
+function rtOutdent(arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { alert('请先点击编辑区域'); return; }
+  editor.focus();
+  document.execCommand('outdent', false, null);
   syncEditorData(editor);
   updateAll();
 }
@@ -2918,6 +3192,7 @@ function generateCode() {
     relationships: relCount ? '关系|#title-rel' : '',
     pokemon: pkmCount ? '宝可梦|#title-pkm' : '',
     detail: detailCount ? d.detailChapter.title + '|#title-detail' : '',
+    gallery: (d.galleryEnabled && d.gallery.categories && d.gallery.categories.length > 0) ? '画廊|#title-gallery-0' : '',
     nameOrigin: nameOriginCount ? d.nameOriginChapter.title + '|#title-nameorigin' : '',
     footerCats: ''
   };
@@ -2950,6 +3225,9 @@ function generateCode() {
     </div>
   </div>` : '';
 
+  // 画廊模块
+  const gallerySectionHtml = generateGalleryHTML(d, t);
+
   // 页脚分类
   const catsHtml = (d.footerCatsEnabled && d.footerCategories.length > 0) ? d.footerCategories.map(c =>
     `<a href="#" style="color:#3366cc;background:#eaf3ff;padding:2px 8px;border-radius:3px;margin-right:5px;font-size:12px;text-decoration:none;">${c}</a>`
@@ -2981,10 +3259,79 @@ function generateCode() {
     relationshipsHtml += `
     <div id="subtitle8-${i+1}" class="my-2">
       <h4 class="font-weight-bold" style="font-size:17px;margin-top:16px;">${rel.name}</h4>
-      <p>${rel.desc}</p>
+      <div class="rel-desc-content">${rel.desc}</div>
     </div>`;
   });
-  const relationshipsSectionHtml = (d.relationshipsEnabled && d.relationships.length > 0) ? `
+  // 画廊 HTML 生成
+function generateGalleryHTML(d, t) {
+  if (!d.galleryEnabled || !d.gallery.categories || d.gallery.categories.length === 0) return '';
+  
+  let html = '';
+  const imgWidth = d.gallery.imageWidth || 200;
+  const imgHeight = d.gallery.imageHeight || 300;
+  const borderRadius = d.gallery.borderRadius || 10;
+  const gridColumns = d.gallery.gridColumns || 3;
+  const gridGap = d.gallery.gridGap || 4;
+  
+  d.gallery.categories.forEach((cat, catIdx) => {
+    if (cat.title) {
+      html += `<h3 id="title-gallery-${catIdx}" style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">${cat.title}</h3>`;
+    }
+    
+    cat.subcategories.forEach((sub, subIdx) => {
+      if (!sub.images || sub.images.length === 0) return;
+      
+      // 子分类标题（在底框外面）
+      if (sub.title) {
+        html += `<h4 id="subtitle-gallery-${catIdx}-${subIdx}" style="font-size:15px;font-weight:bold;margin-top:16px;margin-bottom:8px;">${sub.title}</h4>`;
+      }
+      
+      // 子分类主色底框（带1px描边，圆角固定12px，宽度百分比，居中显示）
+      const catWidth = cat.width || 100;
+      html += `<div class="gallery-subcategory" style="background:${t.primary};border:1px solid ${t.dark};border-radius:12px;padding:1px;margin:0 auto 12px auto;width:${catWidth}%;max-width:100%;">`;
+      
+      // CSS Grid 布局
+      html += `<div class="gallery-grid" style="display:grid;grid-template-columns:repeat(${gridColumns}, 1fr);gap:${gridGap}px;">`;
+      
+      sub.images.forEach((img, imgIdx) => {
+        const scale = img.scale || 100;
+        const colSpan = img.colSpan || 1;
+        const rowSpan = img.rowSpan || 1;
+        
+        const imgBorderRadius = img.borderRadius || 10;
+        // 图片容器卡片（只包括图片）
+        html += `<div class="gallery-grid-item" style="grid-column:span ${colSpan};grid-row:span ${rowSpan};display:flex;flex-direction:column;box-sizing:border-box;height:100%;">`;
+        
+        // 图片容器（固定高度窗口，overflow:hidden 裁剪；图片固定尺寸，不随容器宽度变化）
+        html += `<div style="position:relative;overflow:hidden;min-height:${imgHeight}px;background:${t.light};border:1px solid ${t.dark}!important;border-radius:${imgBorderRadius}px;">`;
+        if (img.url) {
+          const offsetX = img.offsetX || 0;
+          const offsetY = img.offsetY || 0;
+          // 图片固定高度，宽度自适应（width:auto），max-width:none 不随容器缩放
+          // position:absolute + top/left:50% + transform:translate(-50%,-50%) 居中
+          // 位移和缩放通过 transform 组合实现
+          html += `<img src="${img.url}" style="position:absolute;top:50%;left:50%;height:${imgHeight}px;width:auto;max-width:none;transform:translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${scale / 100});transform-origin:center center;">`;
+        }
+        html += `</div>`;
+        
+        // 说明文字（在容器外面）
+        if (img.caption) {
+          html += `<div style="text-align:center;padding:4px 2px;font-size:11.2px;color:#000;">${img.caption}</div>`;
+        }
+        
+        html += `</div>`;
+      });
+      
+      html += `</div>`;
+      
+      // 关闭子分类主色底框
+      html += `</div>`;
+    });
+  });
+  
+  return html;
+}
+const relationshipsSectionHtml = (d.relationshipsEnabled && d.relationships.length > 0) ? `
   <div id="title-rel" class="my-3">
     <h2 style="font-size:20px;border-bottom:1px solid #a2a9b1;padding-bottom:3px;margin-top:24px;font-weight:bold;overflow:hidden;">关系</h2>
     ${relationshipsHtml}
@@ -3118,6 +3465,7 @@ function generateCode() {
     pokemon: pokemonSectionHtml,
     detail: detailSectionHtml,
     nameOrigin: nameOriginSectionHtml,
+    gallery: gallerySectionHtml,
     footerCats: footerSectionHtml
   };
   let modulesOutput = '';
@@ -3215,8 +3563,8 @@ function updatePreview(code) {
       border-radius: 10px !important;
       overflow: hidden !important;
     }
-    /* 列表样式：减小默认段间距 */
-    ul { margin: 4px 0; padding-left: 24px; }
+    /* 列表样式：减小默认段间距，所有层级都使用实心圆点 */
+    ul, ul ul, ul ul ul { margin: 4px 0; padding-left: 24px; list-style-type: disc !important; }
     li { margin-bottom: 2px; }
     /* 信息框图片容器：保留圆角和白色背景 */
     .card.infobox-image-card {
@@ -3224,8 +3572,8 @@ function updatePreview(code) {
       border-radius: 10px !important;
       overflow: hidden !important;
     }
-    /* 列表样式：减小默认段间距 */
-    ul { margin: 4px 0; padding-left: 24px; }
+    /* 列表样式：减小默认段间距，所有层级都使用实心圆点 */
+    ul, ul ul, ul ul ul { margin: 4px 0; padding-left: 24px; list-style-type: disc !important; }
     li { margin-bottom: 2px; }
                         /* 注释文字：虚线下划线 */
     .explain {
@@ -3589,8 +3937,8 @@ function exportFullHtml() {
       border-radius: 10px !important;
       overflow: hidden !important;
     }
-    /* 列表样式：减小默认段间距 */
-    ul { margin: 4px 0; padding-left: 24px; }
+    /* 列表样式：减小默认段间距，所有层级都使用实心圆点 */
+    ul, ul ul, ul ul ul { margin: 4px 0; padding-left: 24px; list-style-type: disc !important; }
     li { margin-bottom: 2px; }
     /* 信息框图片容器：保留圆角和白色背景 */
     .card.infobox-image-card {
@@ -3598,8 +3946,8 @@ function exportFullHtml() {
       border-radius: 10px !important;
       overflow: hidden !important;
     }
-    /* 列表样式：减小默认段间距 */
-    ul { margin: 4px 0; padding-left: 24px; }
+    /* 列表样式：减小默认段间距，所有层级都使用实心圆点 */
+    ul, ul ul, ul ul ul { margin: 4px 0; padding-left: 24px; list-style-type: disc !important; }
     li { margin-bottom: 2px; }
     .card.col-12.col-md-3 { width: 28% !important; min-width: 240px !important; max-width: 320px !important; }
     .card.col-12.col-md-3 { width: 28% !important; min-width: 240px !important; max-width: 320px !important; }
