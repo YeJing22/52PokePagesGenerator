@@ -52,6 +52,8 @@ summary:hover{background:#eaeaea}
 .rt-toolbar button:active{background:#ddd}
 /* 编辑器里的注释文字样式 */
 .rich-editor .explain{position:relative;border-bottom:1px dotted #3366cc;cursor:help;color:inherit;}
+
+
 .rich-editor .explain::after{content:attr(data-annotation);position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;background:#fff;border:1px solid #A2A9B1;border-radius:4px;padding:6px 12px;font-size:13px;color:#202122;line-height:1.4;white-space:normal;min-width:40px;max-width:350px;width:max-content;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.12);opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:9999;pointer-events:none;font-weight:normal;}
 .rich-editor .explain::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:2px;width:13px;height:7px;background-image:url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M6.5%200.5%20L12.5%207%20L0.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M6.5%200.5%20L12.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M6.5%200.5%20L0.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center bottom;opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:10000;pointer-events:none;}
 .rich-editor .explain:hover::after,.rich-editor .explain:hover::before{opacity:1;visibility:visible;}
@@ -59,6 +61,8 @@ summary:hover{background:#eaeaea}
 .rich-editor .explain-top::before{top:auto;bottom:calc(100% + 2px);background-image:url("data:image/svg+xml,%3Csvg%20width='13'%20height='7'%20viewBox='0%200%2013%207'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cpath%20d='M0.5%200%20L12.5%200%20L6.5%207%20Z'%20fill='%23ffffff'/%3E%3Cpath%20d='M0.5%200%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3Cpath%20d='M12.5%200%20L6.5%207'%20stroke='%23A2A9B1'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");background-position:center top;}
 .rt-toolbar .sep{width:1px;background:#ccc;margin:2px 4px}
 .rich-editor{min-height:65px;padding:8px 10px;font-size:13px;line-height:1.7;outline:none;background:#fff;overflow-x:auto;overflow-y:auto;max-width:100%}
+.rich-editor ul{margin:4px 0;padding-left:24px;}
+.rich-editor li{margin-bottom:2px;}
 .rich-editor::-webkit-scrollbar{height:8px;width:8px}
 .rich-editor::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px}
 .rich-editor::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:4px}
@@ -150,8 +154,8 @@ summary:hover{background:#eaeaea}
     <summary>🎨 主题设置</summary>
     <div class="dc">
       <div class="color-row">
-        <div class="fg"><label>主色（信息框背景）</label><input type="text" id="theme-primary" value="#306030" oninput="updateTheme()"></div>
-        <input type="color" id="theme-primary-picker" value="#306030" oninput="syncColor('primary')">
+        <div class="fg"><label>主色（信息框背景）</label><input type="text" id="theme-primary" value="#4a854a" oninput="updateTheme()"></div>
+        <input type="color" id="theme-primary-picker" value="#4a854a" oninput="syncColor('primary')">
       </div>
       <div class="color-row">
         <div class="fg"><label>深色（边框）</label><input type="text" id="theme-dark" value="#205020" oninput="updateTheme()"></div>
@@ -160,10 +164,6 @@ summary:hover{background:#eaeaea}
       <div class="color-row">
         <div class="fg"><label>浅色（标签列背景）</label><input type="text" id="theme-light" value="#ACBFAC" oninput="updateTheme()"></div>
         <input type="color" id="theme-light-picker" value="#ACBFAC" oninput="syncColor('light')">
-      </div>
-      <div class="color-row">
-        <div class="fg"><label>分割线颜色</label><input type="text" id="theme-divider" value="#4a854a" oninput="updateTheme()"></div>
-        <input type="color" id="theme-divider-picker" value="#4a854a" oninput="syncColor('divider')">
       </div>
       <hr style="border:none;border-top:1px solid #ddd;margin:10px 0;">
       <p style="font-weight:bold;margin:0 0 8px;">宝可梦队伍训练家卡片</p>
@@ -226,6 +226,15 @@ summary:hover{background:#eaeaea}
   <option value="2">2.0</option>
   <option value="2.5">2.5</option>
   <option value="3">3.0</option>
+</select><select onchange="rtParagraphSpacing(this.value, 'rt-disambiguation'); this.value='';" title="段间距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">段间距</option>
+  <option value="clear">清除段间距</option>
+  <option value="2px">紧凑 2px</option>
+  <option value="4px">较小 4px</option>
+  <option value="8px">标准 8px</option>
+  <option value="12px">较大 12px</option>
+  <option value="16px">宽松 16px</option>
+  <option value="24px">很宽松 24px</option>
 </select><button onclick="rtLink('rt-disambiguation')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('rt-disambiguation')" title="清除格式">✕ 清除</button>
             
           </div>
@@ -287,7 +296,7 @@ summary:hover{background:#eaeaea}
           <div class="fg"><label id="infobox-card-height-label">卡片高度 (420px)</label><input type="range" id="infobox-card-height" min="200" max="600" value="420" oninput="data.infoboxCardSize.height=parseInt(this.value);document.getElementById('infobox-card-height-label').textContent='卡片高度 ('+this.value+'px)';updateAll()" style="width:100%"></div>
           <div class="fg"><label id="infobox-image-x-label">水平偏移 (0px)</label><input type="range" id="infobox-image-x" min="-100" max="100" value="0" oninput="data.infoboxImageOffset.x=parseInt(this.value);document.getElementById('infobox-image-x-label').textContent='水平偏移 ('+this.value+'px)';updateAll()" style="width:100%"></div>
           <div class="fg"><label id="infobox-image-y-label">垂直偏移 (0px)</label><input type="range" id="infobox-image-y" min="-100" max="100" value="0" oninput="data.infoboxImageOffset.y=parseInt(this.value);document.getElementById('infobox-image-y-label').textContent='垂直偏移 ('+this.value+'px)';updateAll()" style="width:100%"></div>
-          <div class="fg"><label id="infobox-image-scale-label">缩放 (100%)</label><input type="range" id="infobox-image-scale" min="50" max="200" value="100" oninput="data.infoboxImageOffset.scale=parseInt(this.value);document.getElementById('infobox-image-scale-label').textContent='缩放 ('+this.value+'%)';updateAll()" style="width:100%"></div>
+
         </div>
         <button onclick="resetInfoboxImage()" style="font-size:11px;padding:3px 10px;margin-top:4px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">重置位置和尺寸</button>
       </div>
@@ -337,7 +346,16 @@ summary:hover{background:#eaeaea}
   <option value="2">2.0</option>
   <option value="2.5">2.5</option>
   <option value="3">3.0</option>
-</select><button onclick="rtLink()" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat()" title="清除格式">✕ 清除</button>
+</select><select onchange="rtParagraphSpacing(this.value, 'summary-editor'); this.value='';" title="段间距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">段间距</option>
+  <option value="clear">清除段间距</option>
+  <option value="2px">紧凑 2px</option>
+  <option value="4px">较小 4px</option>
+  <option value="8px">标准 8px</option>
+  <option value="12px">较大 12px</option>
+  <option value="16px">宽松 16px</option>
+  <option value="24px">很宽松 24px</option>
+</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtLink()" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat()" title="清除格式">✕ 清除</button>
           
         </div>
         <div class="rich-editor" id="summary-editor" contenteditable="true" data-placeholder="在此输入角色简介…支持加粗、斜体、超链接" oninput="updateData()"></div>
@@ -430,7 +448,16 @@ summary:hover{background:#eaeaea}
   <option value="2">2.0</option>
   <option value="2.5">2.5</option>
   <option value="3">3.0</option>
-</select><button onclick="rtLink('detail-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('detail-editor')" title="清除格式">✕ 清除</button>
+</select><select onchange="rtParagraphSpacing(this.value, 'detail-editor'); this.value='';" title="段间距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">段间距</option>
+  <option value="clear">清除段间距</option>
+  <option value="2px">紧凑 2px</option>
+  <option value="4px">较小 4px</option>
+  <option value="8px">标准 8px</option>
+  <option value="12px">较大 12px</option>
+  <option value="16px">宽松 16px</option>
+  <option value="24px">很宽松 24px</option>
+</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtLink('detail-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('detail-editor')" title="清除格式">✕ 清除</button>
           
         </div>
         <div class="rich-editor" id="detail-editor" contenteditable="true" data-placeholder="在此输入细节内容…" oninput="data.detailChapter.content=this.innerHTML;updateAll()"></div>
@@ -458,6 +485,7 @@ summary:hover{background:#eaeaea}
           <button onclick="rtCmd('bold','nameorigin-editor')" title="加粗"><b>B</b></button>
           <button onclick="rtCmd('italic','nameorigin-editor')" title="斜体"><i>I</i></button>
           <button onclick="rtCmd('underline','nameorigin-editor')" title="下划线"><u>U</u></button>
+          <button onclick="rtRuby('nameorigin-editor')" title="注音（假名）">あ</button>
           <span class="sep"></span>
           <select onchange="rtFontSize(this.value, 'nameorigin-editor'); this.value='';" title="字号" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
   <option value="">字号</option>
@@ -482,7 +510,16 @@ summary:hover{background:#eaeaea}
   <option value="2">2.0</option>
   <option value="2.5">2.5</option>
   <option value="3">3.0</option>
-</select><button onclick="rtLink('nameorigin-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('nameorigin-editor')" title="清除格式">✕ 清除</button>
+</select><select onchange="rtParagraphSpacing(this.value, 'nameorigin-editor'); this.value='';" title="段间距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+  <option value="">段间距</option>
+  <option value="clear">清除段间距</option>
+  <option value="2px">紧凑 2px</option>
+  <option value="4px">较小 4px</option>
+  <option value="8px">标准 8px</option>
+  <option value="12px">较大 12px</option>
+  <option value="16px">宽松 16px</option>
+  <option value="24px">很宽松 24px</option>
+</select><button onclick="rtCmd('insertUnorderedList')" title="无序列表">• 列表</button><button onclick="rtLink('nameorigin-editor')" title="插入超链接">🔗 链接</button><button onclick="rtClearFormat('nameorigin-editor')" title="清除格式">✕ 清除</button>
           
         </div>
         <div class="rich-editor" id="nameorigin-editor" contenteditable="true" data-placeholder="在此输入名字来源内容…" oninput="data.nameOriginChapter.content=this.innerHTML;updateAll()"></div>
@@ -543,7 +580,7 @@ summary:hover{background:#eaeaea}
 <script>
 // ==================== 数据模型 ====================
 let data = {
-  theme: { primary:'#306030', dark:'#205020', light:'#ACBFAC', divider:'#4a854a' },
+  theme: { primary:'#4a854a', dark:'#205020', light:'#ACBFAC' },
   pokemonTheme: { bg:'#8334B7', light:'#AE7BD0', border:'#552277' },
   trainerImageOffset: { x:0, y:0, scale:100 },
   trainerCardSize: { width:100, height:120 },
@@ -1190,11 +1227,11 @@ function syncDataToEditors() {
     document.getElementById('theme-primary').value = data.theme.primary;
     document.getElementById('theme-dark').value = data.theme.dark;
     document.getElementById('theme-light').value = data.theme.light;
-    document.getElementById('theme-divider').value = data.theme.divider;
+    
     document.getElementById('theme-primary-picker').value = data.theme.primary;
     document.getElementById('theme-dark-picker').value = data.theme.dark;
     document.getElementById('theme-light-picker').value = data.theme.light;
-    document.getElementById('theme-divider-picker').value = data.theme.divider;
+    
   }
   
   // 同步宝可梦队伍颜色
@@ -1215,10 +1252,10 @@ function syncDataToEditors() {
   if (data.infoboxImageOffset) {
     const xSlider = document.getElementById('infobox-img-x');
     const ySlider = document.getElementById('infobox-img-y');
-    const scaleSlider = document.getElementById('infobox-img-scale');
+
     if (xSlider) xSlider.value = data.infoboxImageOffset.x || 0;
     if (ySlider) ySlider.value = data.infoboxImageOffset.y || 0;
-    if (scaleSlider) scaleSlider.value = data.infoboxImageOffset.scale || 100;
+
   }
 }
 
@@ -1270,11 +1307,11 @@ function init() {
         document.getElementById('theme-primary').value = data.theme.primary;
         document.getElementById('theme-dark').value = data.theme.dark;
         document.getElementById('theme-light').value = data.theme.light;
-        document.getElementById('theme-divider').value = data.theme.divider;
+        
         document.getElementById('theme-primary-picker').value = data.theme.primary;
         document.getElementById('theme-dark-picker').value = data.theme.dark;
         document.getElementById('theme-light-picker').value = data.theme.light;
-        document.getElementById('theme-divider-picker').value = data.theme.divider;
+        
       }
       // 同步宝可梦队伍颜色
       if (data.pokemonTheme) {
@@ -1370,12 +1407,12 @@ function updateTheme() {
   data.theme.primary = document.getElementById('theme-primary').value;
   data.theme.dark = document.getElementById('theme-dark').value;
   data.theme.light = document.getElementById('theme-light').value;
-  data.theme.divider = document.getElementById('theme-divider').value;
+  
   // 同步 picker
   document.getElementById('theme-primary-picker').value = data.theme.primary;
   document.getElementById('theme-dark-picker').value = data.theme.dark;
   document.getElementById('theme-light-picker').value = data.theme.light;
-  document.getElementById('theme-divider-picker').value = data.theme.divider;
+  
   updateAll();
 }
 
@@ -1611,6 +1648,17 @@ function renderChapters() {
             <option value="2.5">2.5</option>
             <option value="3">3.0</option>
           </select>
+          <select onchange="rtParagraphSpacing(this.value, ${i}); this.value='';" title="段间距" style="font-size:12px;padding:2px;margin:0 2px;vertical-align:middle;">
+            <option value="">段间距</option>
+            <option value="clear">清除段间距</option>
+            <option value="2px">紧凑 2px</option>
+            <option value="4px">较小 4px</option>
+            <option value="8px">标准 8px</option>
+            <option value="12px">较大 12px</option>
+            <option value="16px">宽松 16px</option>
+            <option value="24px">很宽松 24px</option>
+          </select>
+          <button onclick="rtCmd('insertUnorderedList', ${i})" title="无序列表">• 列表</button>
           <button onclick="rtLink(${i})" title="插入超链接">🔗 链接</button>          <button onclick="rtClearFormat(${i})" title="清除格式">✕ 清除</button>
 
         </div>
@@ -2273,6 +2321,71 @@ function rtCmd(cmd, arg) {
   syncEditorData(editor);
   updateAll();
 }
+function rtRuby(arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { alert('请先点击编辑区域'); return; }
+  
+  editor.focus();
+  const selection = window.getSelection();
+  if (!selection.rangeCount || selection.isCollapsed) {
+    alert('请先选中要标注的汉字');
+    return;
+  }
+  
+  const range = selection.getRangeAt(0);
+  const selectedText = range.toString().trim();
+  if (!selectedText) {
+    alert('请先选中要标注的汉字');
+    return;
+  }
+  
+  // 检查选中的文字是否已经在 ruby 里
+  const container = range.commonAncestorContainer;
+  const existingRuby = (container.nodeType === 1 ? container : container.parentElement).closest('ruby');
+  let defaultKana = '';
+  if (existingRuby) {
+    const rt = existingRuby.querySelector('rt');
+    if (rt) defaultKana = rt.textContent || '';
+  }
+  
+  const kana = prompt('请输入"' + selectedText + '"的假名注音：', defaultKana);
+  if (kana === null || kana.trim() === '') return;
+  
+  // 如果已经在 ruby 里，直接更新 rt
+  if (existingRuby) {
+    let rt = existingRuby.querySelector('rt');
+    if (!rt) {
+      rt = document.createElement('rt');
+      existingRuby.appendChild(rt);
+    }
+    rt.textContent = kana;
+    syncEditorData(editor);
+    updateAll();
+    return;
+  }
+  
+  // 创建 ruby 元素
+  const ruby = document.createElement('ruby');
+  const rt = document.createElement('rt');
+  rt.textContent = kana;
+  
+  // 提取选中的内容，放到 ruby 里
+  const frag = range.extractContents();
+  ruby.appendChild(frag);
+  ruby.appendChild(rt);
+  
+  // 插入 ruby
+  range.insertNode(ruby);
+  
+  // 重新选中 ruby 里的文字
+  const newRange = document.createRange();
+  newRange.selectNodeContents(ruby);
+  selection.removeAllRanges();
+  selection.addRange(newRange);
+  
+  syncEditorData(editor);
+  updateAll();
+}
 function rtLink(arg) {
   const editor = resolveEditor(arg);
   if (!editor) { alert('请先点击编辑区域'); return; }
@@ -2476,6 +2589,47 @@ function rtLineHeight(value, arg) {
     showToast('✨ 已恢复默认行距');
   } else {
     showToast('✨ 行距已设置为 ' + value);
+  }
+}
+// ==================== 段间距设置（margin + padding） ====================
+function rtParagraphSpacing(value, arg) {
+  const editor = resolveEditor(arg);
+  if (!editor) { showToast('请先点击编辑区域'); return; }
+  editor.focus();
+  
+  const selection = window.getSelection();
+  if (!selection.rangeCount || selection.isCollapsed) {
+    showToast('请先选中要设置段间距的段落');
+    return;
+  }
+  
+  const range = selection.getRangeAt(0);
+  
+  // 遍历编辑器内所有块级元素，判断是否与选中范围相交或是祖先元素
+  editor.querySelectorAll('div, p, h1, h2, h3, h4, h5, h6, li, blockquote, pre').forEach(el => {
+    if (range.intersectsNode(el) || el.contains(range.commonAncestorContainer)) {
+      if (value === 'clear') {
+        // 清除段间距：margin 和 padding 都设为 0
+        el.style.marginTop = '0';
+        el.style.marginBottom = '0';
+        el.style.paddingTop = '0';
+        el.style.paddingBottom = '0';
+      } else {
+        // 设置段间距：同时设置 margin 和 padding
+        el.style.marginTop = value;
+        el.style.marginBottom = value;
+        el.style.paddingTop = value;
+        el.style.paddingBottom = value;
+      }
+    }
+  });
+  
+  syncEditorData(editor);
+  updateAll();
+  if (value === 'clear') {
+    showToast('✨ 已清除段间距');
+  } else {
+    showToast('✨ 段间距已设置为 ' + value);
   }
 }
 // ==================== 宝可梦属性框插入 ====================
@@ -2705,11 +2859,11 @@ function generateCode() {
   let rowsHtml = '';
   const n = d.infoboxRows.length;
   d.infoboxRows.forEach((row, i) => {
-    let labelStyle = `background-color:${t.light}; width:33.2%; border-right:1px solid ${t.divider}; border-top:none!important; white-space:nowrap;`;
+    let labelStyle = `background-color:${t.light}; width:33.2%; border-right:1px solid ${t.primary}; border-top:none!important; white-space:nowrap; font-size:15px;`;
     let valueStyle = `width:66.8%; border-top:none!important;`;
     if (i === 0) { labelStyle += 'border-radius:10px 0 0 0;'; valueStyle += 'border-radius:0 10px 0 0;'; }
     if (i === n - 1) { labelStyle += 'border-radius:0 0 0 10px;'; valueStyle += 'border-radius:0 0 10px 0;'; }
-    if (i < n - 1) { labelStyle += 'border-bottom:1px solid ' + t.divider + ';'; valueStyle += 'border-bottom:1px solid ' + t.divider + ';'; }
+    if (i < n - 1) { labelStyle += 'border-bottom:1px solid ' + t.primary + ';'; valueStyle += 'border-bottom:1px solid ' + t.primary + ';'; }
     rowsHtml += `
             <tr>
               <td class="text-right font-weight-bold py-1 col-4" scope="row" style="${labelStyle}">${row.label}</td>
@@ -2995,21 +3149,21 @@ function generateCode() {
     <!-- 正文区 -->
     <div class="container text-dark">
       <!-- 角色信息框 -->
-      <div class="card col-12 col-md-3 m-1 m-md-3 p-0" style="float:right;background-color:${t.primary};border:2px solid ${t.dark}!important;border-radius:10px;overflow:hidden;box-shadow:none!important;z-index:5;">
+      <div class="card col-12 col-md-3 m-1 m-md-3 p-0" style="float:right;background-color:${t.primary};border:1px solid ${t.dark}!important;border-radius:10px;overflow:hidden;box-shadow:none!important;z-index:5;display:block!important;">
         <div class="card border-0" style="background-color:${t.primary};padding-top:5px;border-radius:0;box-shadow:none!important;">
           <p class="text-center text-white" style="font-size:22px;font-weight:bold;margin:0;line-height:1.1;">${d.charName}</p>
           ${jpEnHtml}
           ${sloganHtml}
-          <div class="row mx-auto p-1 w-100">
-            <div class="card w-100 bg-white border-0 p-0 infobox-image-card" style="border-radius:10px!important;background-color:#ffffff!important;box-shadow:none!important;overflow:hidden!important;">
+          <div class="w-100" style="padding:1px;background-color:${t.primary};">
+            <div class="card w-100 bg-white border-0 p-0 infobox-image-card" style="border-radius:10px!important;background-color:#ffffff!important;box-shadow:none!important;overflow:hidden!important;width:100%!important;max-width:100%!important;">
               <div style="height:${d.infoboxCardSize.height}px;display:flex;align-items:center;justify-content:center;background-color:#ffffff;border-radius:10px 10px 0 0;overflow:hidden;">
-                <img class="mx-auto" style="width:${Math.round(200 * d.infoboxImageOffset.scale / 100)}px;max-width:100%;height:auto;transform:translate(${d.infoboxImageOffset.x}px, ${d.infoboxImageOffset.y}px);display:block;" src="${d.imageUrl}" alt="${d.charName}">
+                <img class="mx-auto" style="width:100%;height:100%;object-fit:contain;transform:translate(${d.infoboxImageOffset.x}px, ${d.infoboxImageOffset.y}px);display:block;" src="${d.imageUrl}" alt="${d.charName}">
               </div>
               ${imageCaptionHtml}
             </div>
           </div>
         </div>
-        <table style="font-size:13px;padding:0;margin:0;width:100%;border-collapse:collapse;border:none!important;">
+        <table style="font-size:13px;padding:0;margin:0;width:100%;border-collapse:collapse;border-top:none!important;border-left:none!important;border-right:none!important;border-bottom:none!important;">
           <tbody>${rowsHtml}
           </tbody>
         </table>
@@ -3044,7 +3198,7 @@ function updatePreview(code) {
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <style>body{margin:0;padding:0;font-family:-apple-system,'Microsoft YaHei',sans-serif;background:#fff;min-height:100vh;overflow-x:auto;} body::-webkit-scrollbar{height:8px;width:8px;} body::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px;} body::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:4px;} body::-webkit-scrollbar-thumb:hover{background:#a1a1a1;} @media (min-width:768px){.card.col-12.col-md-3{max-width:280px !important;}}
+    <style>body{margin:0;padding:0;font-family:-apple-system,'Microsoft YaHei',sans-serif;background:#fff;min-height:100vh;overflow-x:auto;} body::-webkit-scrollbar{height:8px;width:8px;} body::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px;} body::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:4px;} body::-webkit-scrollbar-thumb:hover{background:#a1a1a1;} @media (min-width:768px){.card.col-12.col-md-3{width:28% !important;min-width:240px !important;max-width:320px !important;}}
     /* 预览区：移除所有包裹容器的视觉效果 */
     .container-fluid { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
     .container { max-width: 100% !important; margin: 0 !important; }
@@ -3061,12 +3215,18 @@ function updatePreview(code) {
       border-radius: 10px !important;
       overflow: hidden !important;
     }
+    /* 列表样式：减小默认段间距 */
+    ul { margin: 4px 0; padding-left: 24px; }
+    li { margin-bottom: 2px; }
     /* 信息框图片容器：保留圆角和白色背景 */
     .card.infobox-image-card {
       background: #ffffff !important;
       border-radius: 10px !important;
       overflow: hidden !important;
     }
+    /* 列表样式：减小默认段间距 */
+    ul { margin: 4px 0; padding-left: 24px; }
+    li { margin-bottom: 2px; }
                         /* 注释文字：虚线下划线 */
     .explain {
       position: relative;
@@ -3429,14 +3589,20 @@ function exportFullHtml() {
       border-radius: 10px !important;
       overflow: hidden !important;
     }
+    /* 列表样式：减小默认段间距 */
+    ul { margin: 4px 0; padding-left: 24px; }
+    li { margin-bottom: 2px; }
     /* 信息框图片容器：保留圆角和白色背景 */
     .card.infobox-image-card {
       background: #ffffff !important;
       border-radius: 10px !important;
       overflow: hidden !important;
     }
-    .card.col-12.col-md-3 { max-width: 280px !important; }
-    .card.col-12.col-md-3 { max-width: 280px !important; }
+    /* 列表样式：减小默认段间距 */
+    ul { margin: 4px 0; padding-left: 24px; }
+    li { margin-bottom: 2px; }
+    .card.col-12.col-md-3 { width: 28% !important; min-width: 240px !important; max-width: 320px !important; }
+    .card.col-12.col-md-3 { width: 28% !important; min-width: 240px !important; max-width: 320px !important; }
     /* 手机端：信息框占满全屏，不浮动，避免和文字交错 */
     @media (max-width: 767px) {
       .card.col-12.col-md-3 {
@@ -3444,6 +3610,11 @@ function exportFullHtml() {
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 0 15px 0 !important;
+      }
+      /* 手机端：图片容器限制最大宽度并居中 */
+      .card.infobox-image-card {
+        max-width: 320px !important;
+        margin: 0 auto !important;
       }
       .container-fluid { overflow: hidden; }
     }
@@ -3602,11 +3773,11 @@ function updateInfoboxImageSliders() {
     const h = document.getElementById('infobox-card-height');
     const x = document.getElementById('infobox-image-x');
     const y = document.getElementById('infobox-image-y');
-    const s = document.getElementById('infobox-image-scale');
+
     if (h) { h.value = data.infoboxCardSize.height; document.getElementById('infobox-card-height-label').textContent = '卡片高度 (' + data.infoboxCardSize.height + 'px)'; }
     if (x) { x.value = data.infoboxImageOffset.x; document.getElementById('infobox-image-x-label').textContent = '水平偏移 (' + data.infoboxImageOffset.x + 'px)'; }
     if (y) { y.value = data.infoboxImageOffset.y; document.getElementById('infobox-image-y-label').textContent = '垂直偏移 (' + data.infoboxImageOffset.y + 'px)'; }
-    if (s) { s.value = data.infoboxImageOffset.scale; document.getElementById('infobox-image-scale-label').textContent = '缩放 (' + data.infoboxImageOffset.scale + '%)'; }
+
   } catch(e) { console.warn('更新信息框滑块失败', e); }
 }
 
